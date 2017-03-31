@@ -6,7 +6,10 @@
     [string]$StorageConnection,
 
     [Parameter(Mandatory=$False)]
-    [string]$KeyValueStorageConnection
+    [string]$KeyValueStorageConnection,
+
+    [Parameter(Mandatory=$False)]
+    [string]$Security_Admins = ""
 )
 
 Function GetAuthorizationToken
@@ -388,6 +391,7 @@ $TemplateParameters = @{
     aad_ExternalApiId             = $aad_ExternalApiId
     StorageConnection             = $StorageConnection
     KeyValueStorageConnection     = $KeyValueStorageConnection
+    Security_Admins               = $Security_Admins
 }
 
 New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
