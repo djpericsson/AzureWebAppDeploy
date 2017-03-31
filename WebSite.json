@@ -202,7 +202,7 @@
           "name": "appsettings",
           "type": "config",
           "dependsOn": [
-            "[concat('Microsoft.Web/Sites', '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/Sites/', variables('WebSiteName'), '/extensions/MSDeploy')]"
           ],
           "properties": {
             "aad_ClientId": "[variables('aad_ClientId')]",
@@ -218,7 +218,7 @@
           "name": "connectionstrings",
           "type": "config",
           "dependsOn": [
-            "[concat('Microsoft.Web/Sites', '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/Sites/', variables('WebSiteName'), '/extensions/MSDeploy')]"
           ],
           "properties": {
             "StorageConnection-Web.config Connection String": {
