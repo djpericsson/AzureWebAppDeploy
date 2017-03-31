@@ -65,12 +65,12 @@ Function Create-AesKey() {
 
 Clear-Host
 
-If (-not([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
-{   
-    Write-Warning "This script requires elevated permissions."
-    Write-Warning "Please start PowerShell as an Administrator and run this script again."
-    exit
-}
+#If (-not([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+#{   
+#    Write-Warning "This script requires elevated permissions."
+#    Write-Warning "Please start PowerShell as an Administrator and run this script again."
+#    exit
+#}
 
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 
@@ -374,7 +374,6 @@ If (-not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName 
     Write-Output $AzureRmADServicePrincipal
 }
 #endregion
-
 
 #region Deploy Azure Resource Manager Template
 Write-Output ""
