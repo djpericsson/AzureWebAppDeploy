@@ -9,7 +9,7 @@
     [string]$KeyValueStorageConnection,
 
     [Parameter(Mandatory=$False)]
-    [string]$Security_Admins = $null
+    [string]$Security_Admins = ""
 )
 
 Function GetAuthorizationToken
