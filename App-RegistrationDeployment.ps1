@@ -65,13 +65,6 @@ Function Create-AesKey() {
 
 Clear-Host
 
-#If (-not([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
-#{   
-#    Write-Warning "This script requires elevated permissions."
-#    Write-Warning "Please start PowerShell as an Administrator and run this script again."
-#    exit
-#}
-
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 
 #region Log in to Azure Automation
@@ -144,9 +137,6 @@ $CorsRules = @{
 
 $aad_TenantId              = "8779117d-772e-4ea5-94ec-44a1a1d0427b"
 $aad_ExternalApiId         = "https://axtestdynamics365aos.cloudax.dynamics.com/"
-#$security_Admins           = ""
-
-#$CorsRules.AllowedOrigins = @("https://www.sunet.se")
 #endregion
 
 #region Create AzureRmResourceGroup
