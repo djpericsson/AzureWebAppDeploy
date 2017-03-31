@@ -125,8 +125,7 @@
     },
     "security_Admins": {
       "type": "string",
-      "minLength": 0,
-      "defaultValue": null,
+      "defaultValue": "",
       "metadata": {
         "description": "The security_Admins"
       }
