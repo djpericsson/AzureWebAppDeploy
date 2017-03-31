@@ -202,7 +202,7 @@
           "name": "appsettings",
           "type": "config",
           "dependsOn": [
-            "[concat('Microsoft.Web/Sites/', variables('WebSiteName'), '/extensions/MSDeploy')]"
+            "[resourceId('Microsoft.Web/sites', variables('webSiteName'), '/extensions/MSDeploy')]"
           ],
           "properties": {
             "aad_ClientId": "[variables('aad_ClientId')]",
