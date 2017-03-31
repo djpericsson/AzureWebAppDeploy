@@ -97,7 +97,7 @@
     },
     "aad_ClientSecret": {
       "type": "string",
-      "minLength": 1,
+      "minLength": 0,
       "metadata": {
         "description": "The aad_ClientSecret"
       }
