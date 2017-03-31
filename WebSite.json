@@ -122,14 +122,14 @@
       "metadata": {
         "description": "The aad_ExternalApiId"
       }
+    },
+    "security_Admins": {
+      "type": "string",
+      "minLength": 0,
+      "metadata": {
+        "description": "The security_Admins"
+      }
     }
-    //"security_Admins": {
-    //  "type": "string",
-    //  "minLength": 1,
-    //  "metadata": {
-    //    "description": "The security_Admins"
-    //  }
-    //}
   },
   "variables": {
     "WebSiteName": "[parameters('WebSiteName')]",
@@ -140,8 +140,8 @@
     "aad_ClientSecret": "[parameters('aad_ClientSecret')]",
     "aad_TenantId": "[parameters('aad_TenantId')]",
     "aad_PostLogoutRedirectUri": "[parameters('aad_PostLogoutRedirectUri')]",
-    "aad_ExternalApiId": "[parameters('aad_ExternalApiId')]"
-    //"security_Admins": "[parameters('security_Admins')]"
+    "aad_ExternalApiId": "[parameters('aad_ExternalApiId')]",
+    "security_Admins": "[parameters('security_Admins')]"
   },
   "resources": [
     {
@@ -210,8 +210,8 @@
             "aad_ClientSecret": "[variables('aad_ClientSecret')]",
             "aad_TenantId": "[variables('aad_TenantId')]",
             "aad_PostLogoutRedirectUri": "[variables('aad_PostLogoutRedirectUri')]",
-            "aad_ExternalApiId": "[variables('aad_ExternalApiId')]"
-            //"security_Admins": "[variables('security_Admins')]"
+            "aad_ExternalApiId": "[variables('aad_ExternalApiId')]",
+            "security_Admins": "[variables('security_Admins')]"
           }
         },
         {
