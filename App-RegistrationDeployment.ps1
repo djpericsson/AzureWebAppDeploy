@@ -345,7 +345,23 @@ If (-not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName 
     Write-Output "Creating AzureRmRoleAssignment"
     Write-Output "--------------------------------------------------------------------------------"
 
-    New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId
+    $x = 0
+    While ((-not($AzureRmRoleAssignment)) -and ($X -lt 15))
+    {
+        $AzureRmRoleAssignment = $null
+        Try
+        {
+            $AzureRmRoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction Stop
+        }
+        Catch
+        {
+            Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmRoleAssignment status for 5 seconds" -ForegroundColor "cyan"
+            Start-Sleep 5
+            $x++
+        }
+    }
+
+    Write-Output $AzureRmADServicePrincipal
 }
 #endregion
 
