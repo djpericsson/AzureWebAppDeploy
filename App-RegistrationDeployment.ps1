@@ -270,7 +270,10 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $psadKeyValue             = Create-AesKey
     $psadCredential.Password  = $psadKeyValue
 
-    $psadCredential | Export-Clixml "$env:USERPROFILE\PSADUsr.xml"
+    $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
+    $SecurePassword | Export-Clixml "$env:USERPROFILE\PSDAKey.xml"
+
+    #$psadCredential | Export-Clixml "$env:USERPROFILE\PSADUsr.xml"
 
     Write-Output $psadCredential
 
@@ -295,12 +298,16 @@ Else
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    If (!(Test-Path -Path "$($env:USERPROFILE)\PSADUsr.csv" -ErrorAction SilentlyContinue))
+    If (!(Test-Path -Path "$($env:USERPROFILE)\PSDAKey.csv" -ErrorAction SilentlyContinue))
     {
-        $psadCredential = Import-Clixml "$env:USERPROFILE\PSADUsr.xml"
-        $psadKeyValue   = $psadCredential.Password
 
-        Write-Output $psadCredential
+        $SecurePassword = Import-Clixml "$env:USERPROFILE\PSDAKey.xml"
+        $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
+
+        #$psadCredential = Import-Clixml "$env:USERPROFILE\PSADUsr.xml"
+        #$psadKeyValue   = $psadCredential.Password
+
+        Write-Output $psadKeyValue
     }
     Else
     {
