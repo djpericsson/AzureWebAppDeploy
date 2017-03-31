@@ -136,7 +136,7 @@ $requiredResourceAccess    = @{
                            
 $CorsRules = @{            
     AllowedHeaders         = @("x-ms-meta-abc","x-ms-meta-data*","x-ms-meta-target*")
-    AllowedOrigins         = @("https://website43ueoaeknvyeu.azurewebsites.net")
+    AllowedOrigins         = @("https://$($_TenantId).azurewebsites.net")
     MaxAgeInSeconds        = 200
     ExposedHeaders         = @("x-ms-meta-*")
     AllowedMethods         = @("Get")
