@@ -391,7 +391,11 @@ $TemplateParameters = @{
     aad_ExternalApiId             = $aad_ExternalApiId
     StorageConnection             = $StorageConnection
     KeyValueStorageConnection     = $KeyValueStorageConnection
-    Security_Admins               = $Security_Admins
+}
+
+If ($Security_Admins)
+{
+    $TemplateParameters.Add("Security_Admins",$Security_Admins)
 }
 
 New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
