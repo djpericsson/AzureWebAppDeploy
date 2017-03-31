@@ -3,13 +3,13 @@
     [string]$Location = "westeurope",
 
     [Parameter(Mandatory=$False)]
+    [string]$Security_Admins,
+
+    [Parameter(Mandatory=$False)]
     [string]$StorageConnection,
 
     [Parameter(Mandatory=$False)]
-    [string]$KeyValueStorageConnection,
-
-    [Parameter(Mandatory=$False)]
-    [string]$Security_Admins
+    [string]$KeyValueStorageConnection
 )
 
 Function GetAuthorizationToken
