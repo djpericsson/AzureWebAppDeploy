@@ -81,7 +81,7 @@ Login-AzureRmAccount  -Credential $Credential
 
 #region Determine AzureRmDnsAvailability
 $_TenantId = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,21))"
-If (-not(Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
+If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
     For ($x=1; $x -le 9; $x++)
     {
@@ -92,7 +92,7 @@ If (-not(Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -
         }
     }
 }
-If (-not(Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
+If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
     Write-Warning "A unique AzureRm DNS name could not be automatically determined."
     Write-Warning "This script will be aborted."
