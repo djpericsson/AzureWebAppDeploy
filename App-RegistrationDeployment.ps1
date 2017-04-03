@@ -79,9 +79,28 @@ Import-Module AzureRM.Automation
 Login-AzureRmAccount  -Credential $Credential
 #endregion
 
-#region Define parameters
-$_TenantId                 = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,21))"
-                           
+#region Determine AzureRmDnsAvailability
+$_TenantId = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,21))"
+If (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location))
+{
+    For ($x=1; $x -le 9; $x++)
+    {
+        If (Test-AzureRmDnsAvailability -DomainNameLabel "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,20))$($x)" -Location $Location)
+        {
+            $_TenantId = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,20))$($x)"
+            break
+        }
+    }
+}
+If (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location))
+{
+    Write-Warning "A unique AzureRm DNS name could not be automatically determined."
+    Write-Warning "This script will be aborted."
+    end
+}
+#endregion
+
+#region Define parameters                           
 $ResourceGroupName         = $_TenantId
                            
 $StorageAccountName        = $_TenantId
