@@ -405,7 +405,7 @@ $TemplateParameters = @{
     hostingPlanName               = $WebApplicationName
     aad_ClientId                  = $AzureRmADApplication.ApplicationId
     aad_ClientSecret              = $psadKeyValue
-    aad_TenantId                  = "8779117d-772e-4ea5-94ec-44a1a1d0427b"
+    aad_TenantId                  = $aad_TenantId
     aad_PostLogoutRedirectUri     = "$($HomePage)/close.aspx?signedout=yes"
     aad_ExternalApiId             = $aad_ExternalApiId
     StorageConnection             = $StorageConnection
