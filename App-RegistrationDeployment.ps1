@@ -1,4 +1,5 @@
-﻿param(
+﻿#Parameters for input as arguments or parameters
+param(
     [Parameter(Mandatory=$False)]
     [string]$Location = "westeurope",
 
@@ -12,6 +13,7 @@
     [string]$KeyValueStorageConnection
 )
 
+#Function to get authorization token for communication with the Microsoft Graph REST API
 Function GetAuthorizationToken
 {
     param
@@ -32,6 +34,7 @@ Function GetAuthorizationToken
     return $authResult
 }
 
+#Function to create AesManagedObject for the PSADCredential
 Function Create-AesManagedObject($key, $IV) {
     $aesManaged           = New-Object "System.Security.Cryptography.AesManaged"
     $aesManaged.Mode      = [System.Security.Cryptography.CipherMode]::CBC
@@ -57,6 +60,7 @@ Function Create-AesManagedObject($key, $IV) {
     $aesManaged
 }
 
+#Function to create AesKey for the PSADCredential
 Function Create-AesKey() {
     $aesManaged = Create-AesManagedObject 
     $aesManaged.GenerateKey()
