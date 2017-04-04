@@ -114,8 +114,8 @@ $StorageType               = "Standard_LRS"
 $DeploymentName            = $_TenantId
                            
 $WebApplicationName        = $_TenantId
-$HomePage                  = "http://$($_TenantId).azurewebsites.net"
-$IdentifierUris            = "http://$($_TenantId).azurewebsites.net"
+$HomePage                  = "https://$($_TenantId).azurewebsites.net"
+$IdentifierUris            = "https://$($_TenantId).azurewebsites.net"
                            
 $FileName                  = "package.zip"                                       
 $FilePath                  = $env:TEMP
