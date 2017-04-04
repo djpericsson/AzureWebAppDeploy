@@ -7,10 +7,7 @@ param(
     [string]$Security_Admins,
 
     [Parameter(Mandatory=$False)]
-    [string]$StorageConnection,
-
-    [Parameter(Mandatory=$False)]
-    [string]$KeyValueStorageConnection
+    [string]$DynamicsAXApiId
 )
 
 #Function to get authorization token for communication with the Microsoft Graph REST API
@@ -158,8 +155,8 @@ $CorsRules = @{
     AllowedMethods         = @("Get")
 }
 
-$aad_TenantId              = "8779117d-772e-4ea5-94ec-44a1a1d0427b"
-$aad_ExternalApiId         = "https://axtestdynamics365aos.cloudax.dynamics.com/"
+$aad_TenantId              = (Get-AzureRmTenant).TenantId
+$aad_ExternalApiId         = "https://$($DynamicsAXApiId).cloudax.dynamics.com"
 #endregion
 
 #region Create AzureRmResourceGroup
@@ -286,8 +283,6 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
     $SecurePassword | Export-Clixml "$env:USERPROFILE\PSDAKey.xml"
 
-    #$psadCredential | Export-Clixml "$env:USERPROFILE\PSADUsr.xml"
-
     Write-Output $psadCredential
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -316,9 +311,6 @@ Else
 
         $SecurePassword = Import-Clixml "$env:USERPROFILE\PSDAKey.xml"
         $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
-
-        #$psadCredential = Import-Clixml "$env:USERPROFILE\PSADUsr.xml"
-        #$psadKeyValue   = $psadCredential.Password
 
         Write-Output $psadKeyValue
     }
@@ -408,8 +400,8 @@ $TemplateParameters = @{
     aad_TenantId                  = $aad_TenantId
     aad_PostLogoutRedirectUri     = "$($HomePage)/close.aspx?signedout=yes"
     aad_ExternalApiId             = $aad_ExternalApiId
-    StorageConnection             = $StorageConnection
-    KeyValueStorageConnection     = $KeyValueStorageConnection
+    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
+    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
 }
 
 If ($Security_Admins)
