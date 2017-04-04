@@ -223,15 +223,15 @@
             "[concat('Microsoft.Web/Sites/', parameters('WebSiteName'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
-            "StorageConnection-Web.config Connection String": {
+            "StorageConnection": {
               "value": "[variables('StorageConnection')]",
               "Name": "StorageConnection",
-              "type": "SQLServer"
+              "type": "Custom"
             },
-            "KeyValueStorageConnection-Web.config Connection String": {
+            "KeyValueStorageConnection": {
               "value": "[variables('KeyValueStorageConnection')]",
               "Name": "KeyValueStorageConnection",
-              "type": "SQLServer"
+              "type": "Custom"
             }
           }
         }

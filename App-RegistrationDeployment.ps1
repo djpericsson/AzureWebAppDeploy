@@ -1,12 +1,12 @@
 ﻿#Parameters for input as arguments or parameters
 param(
-    [Parameter(Mandatory=$False)]
-    [string]$Location = "westeurope",
+    [Parameter(Mandatory=$True)]
+    [string]$Location,
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory=$True)]
     [string]$Security_Admins,
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory=$True)]
     [string]$DynamicsAXApiId
 )
 
@@ -81,14 +81,14 @@ Login-AzureRmAccount  -Credential $Credential
 #endregion
 
 #region Determine AzureRmDnsAvailability
-$_TenantId = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,21))"
+$_TenantId = "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,18))"
 If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
     For ($x=1; $x -le 9; $x++)
     {
-        If (Test-AzureRmDnsAvailability -DomainNameLabel "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,20))$($x)" -Location $Location)
+        If (Test-AzureRmDnsAvailability -DomainNameLabel "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)" -Location $Location)
         {
-            $_TenantId = "dax$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,20))$($x)"
+            $_TenantId = "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)"
             break
         }
     }
