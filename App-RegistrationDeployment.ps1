@@ -81,7 +81,10 @@ Login-AzureRmAccount  -Credential $Credential
 #endregion
 
 #region Determine AzureRmDnsAvailability
-$_TenantId = "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,18))"
+$md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+$utf8 = New-Object -TypeName System.Text.UTF8Encoding
+$hash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($DynamicsAXApiId)))
+$_TenantId = "exflow$(($hash.ToLower()).Replace('-','').Substring(0,18))"
 If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
     For ($x=1; $x -le 9; $x++)
