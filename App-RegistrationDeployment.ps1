@@ -443,7 +443,7 @@ ForEach ($DllFile in $AzureSDKDlls)
     }
 }
 
-$newGuid = New-Guid
+$newGuid = [guid]::NewGuid()
 $guidToBytes = [System.Text.Encoding]::UTF8.GetBytes($newGuid)
 
 $mySecret = @{
