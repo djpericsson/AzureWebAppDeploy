@@ -302,6 +302,7 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
         DisplayName         = $WebApplicationName
         HomePage            = $HomePage
         IdentifierUris      = $IdentifierUris
+        ReplyUrls           = $HomePage
         PasswordCredentials = $psadCredential
     }
 
