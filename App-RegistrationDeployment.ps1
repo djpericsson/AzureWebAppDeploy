@@ -114,7 +114,7 @@ $StorageType               = "Standard_LRS"
 $DeploymentName            = $_TenantId
                            
 $WebApplicationName        = $_TenantId
-$HomePage                  = "https://$($_TenantId).azurewebsites.net"
+$HomePage                  = "https://$($_TenantId).azurewebsites.net/inbox.aspx"
 $IdentifierUris            = "https://$($_TenantId).azurewebsites.net"
                            
 $FileName                  = "package.zip"                                       
@@ -132,23 +132,29 @@ $requiredResourceAccess    = @{
     "resourceAppId"        = "00000015-0000-0000-c000-000000000000"
     "resourceAccess"       = @(
         @{                 
+            "id"           = "6397893c-2260-496b-a41d-2f1f15b16ff3"
+            "type"         = "Scope"
+        },
+        @{                 
             "id"           = "a849e696-ce45-464a-81de-e5c5b45519c1"
             "type"         = "Scope"
         },                 
         @{                 
             "id"           = "ad8b4a5c-eecd-431a-a46f-33c060012ae1"
             "type"         = "Scope"
-        },                 
+        }                 
+    )                         
+}
+
+$requiredResourceAccessAZ  = @{
+    "resourceAppId"        = "00000002-0000-0000-c000-000000000000"
+    "resourceAccess"       = @(
         @{                 
-            "id"           = "6397893c-2260-496b-a41d-2f1f15b16ff3"
+            "id"           = "311a71cc-e848-46a1-bdf8-97ff7156d8e6"
             "type"         = "Scope"
-        },                 
-        @{                 
-            "id"           = "add75854-3691-457b-84bc-76bc249f1b6f"
-            "type"         = "Scope"
-        }                  
-    )                      
-}                          
+        }                
+    )                         
+}                         
                            
 $CorsRules = @{            
     AllowedHeaders         = @("x-ms-meta-abc","x-ms-meta-data*","x-ms-meta-target*")
@@ -459,7 +465,7 @@ $restPayload = @{
     "keyCredentials" = @($mySecret)
 }
 
-$restPayload.Add("requiredResourceAccess",@($requiredResourceAccess))
+$restPayload.Add("requiredResourceAccess",@($requiredResourceAccess,$requiredResourceAccessAZ))
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
