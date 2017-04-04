@@ -523,7 +523,7 @@ Write-Output "------------------------------------------------------------------
 ForEach ($DllFile in $AzureSDKDlls)
 {
     Write-Output "Removing: $($DllFile)"
-    Remove-Item -Path "$($FilePath)\$($DllFile)" -Force
+    Remove-Item -Path "$($FilePath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
 }
 #endregion
 
