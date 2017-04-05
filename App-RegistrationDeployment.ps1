@@ -408,7 +408,7 @@ $TemplateParameters = @{
     aad_ClientId                  = $AzureRmADApplication.ApplicationId
     aad_ClientSecret              = $psadKeyValue
     aad_TenantId                  = $aad_TenantId
-    aad_PostLogoutRedirectUri     = "$($HomePage)/close.aspx?signedout=yes"
+    aad_PostLogoutRedirectUri     = "$($IdentifierUris)/close.aspx?signedout=yes"
     aad_ExternalApiId             = $aad_ExternalApiId
     StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
     KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
