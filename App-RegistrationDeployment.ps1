@@ -537,6 +537,7 @@ ForEach ($DllFile in $AzureSDKDlls)
 $Measure.Stop()
 
 Write-Output ""
+Write-Output ""
 Write-Output "Browse to the following URL to initialize the application:"
 Write-Host $HomePage -ForegroundColor Green
 
