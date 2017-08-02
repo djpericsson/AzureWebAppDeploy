@@ -19,7 +19,7 @@
     Modules = @(                    
         @{                          
             Name                    = "AzureRM"
-            MinimumVersion          = "4.5.2"
+            MinimumVersion          = "4.0.2"
         }                           
     );                              
                                     
