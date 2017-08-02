@@ -5,7 +5,7 @@
     PowerShellVersion               = "5.0.0"
                                     
     RedistPath                      = "https://github.com/djpericsson/AzureWebAppDeploy/raw/master"
-    LocalPath                       = "C:\Temp"
+    LocalPath                       = $env:TEMP
                                     
     WebApplication                  = "package.zip"
 
