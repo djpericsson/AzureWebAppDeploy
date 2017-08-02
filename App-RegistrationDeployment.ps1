@@ -1,175 +1,262 @@
 ﻿#Parameters for input as arguments or parameters
 param(
-    [Parameter(Mandatory=$True)]
-    [string]$Location,
+    [Parameter(Mandatory=$False)]
+    [string]$Location = "northeurope",
 
-    [Parameter(Mandatory=$True)]
-    [string]$Security_Admins,
+    [Parameter(Mandatory=$False)]
+    [string]$Security_Admins = "JOHANB,JERRY",
 
-    [Parameter(Mandatory=$True)]
-    [string]$DynamicsAXApiId
+    [Parameter(Mandatory=$False)]
+    [string]$DynamicsAXApiId = "axtestdynamics365aos-adl.cloudax.dynamics.com",
+
+    [Parameter(Mandatory=$False)]
+    [string]$ExFlowUserSecret,
+
+    [Parameter(Mandatory=$False)]
+    [string]$Prefix,
+
+    [Parameter(Mandatory=$False)]
+    [string]$PackageVersion = "latest",
+
+    [Parameter(Mandatory=$False)]
+    [string]$TenantGuid,
+
+    [Parameter(Mandatory=$False)]
+    [string]$WebAppSubscriptionGuid
 )
-
-#Function to get authorization token for communication with the Microsoft Graph REST API
-Function GetAuthorizationToken
-{
-    param
-    (
-            [Parameter(Mandatory=$true)]
-            $TenantName
-    )
-    $adal             = "$($FilePath.Replace("\\","\"))\Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-    $adalforms        = "$($FilePath.Replace("\\","\"))\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll"
-    [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
-    [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
-    $clientId         = "1950a258-227b-4e31-a9cf-717495945fc2" 
-    $resourceAppIdURI = "https://graph.windows.net"
-    $authority        = "https://login.windows.net/$TenantName"
-    $creds            = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserCredential" -ArgumentList $($Credential.UserName),$($Credential.GetNetworkCredential().password)
-    $authContext      = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
-    $authResult       = $authContext.AcquireToken($resourceAppIdURI, $clientId, $creds)
-    return $authResult
-}
-
-#Function to create AesManagedObject for the PSADCredential
-Function Create-AesManagedObject($key, $IV) {
-    $aesManaged           = New-Object "System.Security.Cryptography.AesManaged"
-    $aesManaged.Mode      = [System.Security.Cryptography.CipherMode]::CBC
-    $aesManaged.Padding   = [System.Security.Cryptography.PaddingMode]::Zeros
-    $aesManaged.BlockSize = 128
-    $aesManaged.KeySize   = 256
-    If ($IV) {
-        If ($IV.getType().Name -eq "String") {
-            $aesManaged.IV = [System.Convert]::FromBase64String($IV)
-        }
-        Else {
-            $aesManaged.IV = $IV
-        }
-    }
-    If ($key) {
-        If ($key.getType().Name -eq "String") {
-            $aesManaged.Key = [System.Convert]::FromBase64String($key)
-        }
-        Else {
-            $aesManaged.Key = $key
-        }
-    }
-    $aesManaged
-}
-
-#Function to create AesKey for the PSADCredential
-Function Create-AesKey() {
-    $aesManaged = Create-AesManagedObject 
-    $aesManaged.GenerateKey()
-    [System.Convert]::ToBase64String($aesManaged.Key)
-}
 
 Clear-Host
 
+#Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
+
+$Webclient                       = New-Object System.Net.Webclient
+$Webclient.UseDefaultCredentials = $true
+$Webclient.Proxy.Credentials     = $Webclient.Credentials
+$Webclient.Encoding              = [System.Text.Encoding]::UTF8
+$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
+
+$Webclient.DownloadString('https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/ConfigurationData.psd1')
+$Webclient.DownloadString('https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Helper-Module.psm1')
+
+#Import script parameters and variables from a configuration data file
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Importing configuration"
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "$PSScriptRoot\ConfigurationData.psd1"
+Write-Output ""
+
+#Import the helper module to memory
+Import-Module "$PSScriptRoot\Helper-Module.psm1" -Force
+
+#Convert the configuration data file as Hash Table
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData "$PSScriptRoot\ConfigurationData.psd1"
+
+#region Checking PowerShell version and modules
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Checking PowerShell version and modules"
+Write-Output "--------------------------------------------------------------------------------"
+
+#Call function to verify installed modules and versions against configuration data file
+$hasErrors = Get-RequiredModules -Modules $ConfigurationData.Modules
+
+#Verify installed PowerShell version against the configuration data file
+If ($PSVersionTable.PSVersion -lt $ConfigurationData.PowerShell.Version) {
+    Write-Warning "PowerShell must be updated to at least $($ConfigurationData.PowerShell.Version). See SignUp's GitHub for more info and help."
+    $hasErrors = $True
+} Else {
+    Write-Host "PowerShell version $($PSVersionTable.PSVersion) is valid."
+    Write-Host ""
+}
+
+If ($hasErrors) {
+    Write-Host ""
+    Write-Warning "See SignUp's GitHub for more info and help."
+    break
+}
+#endregion
+
+<#
+#get the zip-file
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Checking package"
+Write-Output "--------------------------------------------------------------------------------"
+
+$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/packages?s='+$ExFlowUserSecret+'&v='+$PackageVersion)
+
+Write-Output "Package URL: " 
+Write-Output $packageURL
+Write-Output ""
+
+$packgeUrlAr   = $packageURL.Split("?")
+$packageSAS    = "package.zip?"+$packgeUrlAr[1]
+$packageFolder = $packgeUrlAr[0].replace("/package.zip","")
+
+#endregion
+#>
+
+#Import used AzureRM modules to memory
+If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
+If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue))    { Import-Module AzureRM.Profile }
 
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Logging in to azure automation"
 Write-Output "--------------------------------------------------------------------------------"
 
-[PSCredential]$Credential = (Get-Credential -Message "Azure tenant administrator account")
-If (!($Credential)) { Write-Output "Script aborted..." ; exit }
+#Determine logon status
+$AzureRmLogon = Get-AzureRmContext -ErrorAction Stop
 
-Import-Module AzureRM.Automation
-Login-AzureRmAccount  -Credential $Credential
-#endregion
+If (!$AzureRmLogon.Account) {
 
-#region Determine AzureRmDnsAvailability
-$md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-$utf8 = New-Object -TypeName System.Text.UTF8Encoding
-$hash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($DynamicsAXApiId)))
-$_TenantId = "exflow$(($hash.ToLower()).Replace('-','').Substring(0,18))"
-If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
-{
-    For ($x=1; $x -le 9; $x++)
-    {
-        If (Test-AzureRmDnsAvailability -DomainNameLabel "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)" -Location $Location)
-        {
-            $_TenantId = "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)"
-            break
+    #Determine if manual subscription id was provided
+    If ($WebAppSubscriptionGuid) {
+        Write-Host "Subscription co-admin account"
+        $AzureRmLogon = Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid
+    }
+    Else {
+        $AzureRmLogon = Set-AzureRmLogon
+    }
+
+    #If logon failed abort script
+    If (!$AzureRmLogon) { return }
+
+    #Determine Azure subscription
+    If (-not($AzureRmLogon.Context.Subscription)){
+        Write-Warning "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal."
+        return
+    }
+    Else {
+        #Get all subscriptions
+        $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Context.Tenant.Id | Select-Object Name,Id
+
+        #Multiple subscriptions detected
+        If ($SubscriptionIds.Id.count -gt 1) {
+            $mChoices = @()
+            $choice = $null
+            [int]$i = 0
+
+            #Dynamically provide all subscriptions as a choice menu
+            ForEach ($SubscriptionId in $SubscriptionIds) {
+                $i++
+                $choice = "`$$i = new-Object System.Management.Automation.Host.ChoiceDescription '`&$($SubscriptionId.Id)','$($SubscriptionId.Id)'"
+                Invoke-Expression $choice
+                $mChoices += $($SubscriptionId.Name)
+            }
+
+            #Call functions to return answer from choice menu
+            $answer = Get-ChoiceMenu -Choices $choices -mChoices $mChoices
+        
+            #Select the chosen AzureRmSubscription
+            Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Context.Tenant.Id
         }
     }
+
+    #Set AzureRM context
+    Set-AzureRmContext -Context $AzureRmLogon.Context
+
 }
-If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
+Else {
+    #Get all subscriptions
+    $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Tenant.Id | Select-Object Name,Id
+
+    #Multiple subscriptions detected
+    If ($SubscriptionIds.Id.count -gt 1) {
+        $mChoices = @()
+        $choice = $null
+        [int]$i = 0
+
+        #Dynamically provide all subscriptions as a choice menu
+        ForEach ($SubscriptionId in $SubscriptionIds) {
+            $i++
+            $choice = "`$$i = new-Object System.Management.Automation.Host.ChoiceDescription '`&$($SubscriptionId.Id)','$($SubscriptionId.Id)'"
+            Invoke-Expression $choice
+            $mChoices += $($SubscriptionId.Name)
+        }
+
+        #Call functions to return answer from choice menu
+        $answer = Get-ChoiceMenu -Choices $choices -mChoices $mChoices
+        
+        #Select the chosen AzureRmSubscription
+        Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Tenant.Id
+    }
+    Else {
+        #List currently logged on session
+        $AzureRmLogon
+    }
+}
+
+#Get tenant id information
+If ($TenantGuid){
+    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
+} Else {
+    $Tenant = Get-AzureRmTenant
+}
+
+$aad_TenantId = $Tenant.Id
+$tenantName = $Tenant.Directory
+
+If (!$aad_TenantId){
+    Write-Warning "A tenant id could not be found."
+    return
+}
+
+#Set tenant variables based on logged on session
+If ($AzureRmLogon.Account.Id) {
+    $SignInName   = $AzureRmLogon.Account.Id
+    $Subscription = "/subscriptions/$($AzureRmLogon.Subscription.Id)"
+    $TenantId     = $AzureRmLogon.Tenant.Id
+}
+Else {
+    $SignInName   = $AzureRmLogon.Context.Account.Id
+    $Subscription = "/subscriptions/$($AzureRmLogon.Context.Subscription.Id)"
+    $TenantId     = $AzureRmLogon.Context.Tenant.Id
+}
+
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Tenant information"
+Write-Output "--------------------------------------------------------------------------------"
+
+$Tenant
+#endregion
+
+#Call function to set deployment name for resources based on DynamicsAXApiId name
+$DeploymentName = Set-DeploymentName -String $DynamicsAXApiId
+
+If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
+
+If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue) -and `
+   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)))
 {
     Write-Warning "A unique AzureRm DNS name could not be automatically determined."
-    Write-Warning "This script will be aborted."
-    end
-}
-#endregion
-
-#region Define parameters                           
-$ResourceGroupName         = $_TenantId
-                           
-$StorageAccountName        = $_TenantId
-$StorageContainer          = "artifacts"
-$StorageType               = "Standard_LRS"
-                           
-$DeploymentName            = $_TenantId
-                           
-$WebApplicationName        = $_TenantId
-$HomePage                  = "https://$($_TenantId).azurewebsites.net/inbox.aspx"
-$IdentifierUris            = "https://$($_TenantId).azurewebsites.net"
-                           
-$FileName                  = "package.zip"                                       
-$FilePath                  = $env:TEMP
-                                     
-$RedistPath                = "https://github.com/djpericsson/AzureWebAppDeploy/raw/master"
-$AzureSDKDllLocation       = $RedistPath
-                           
-$AzureSDKDlls              = @(
-                              "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-                              "Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll"
-                             )
-                           
-$requiredResourceAccess    = @{
-    "resourceAppId"        = "00000015-0000-0000-c000-000000000000"
-    "resourceAccess"       = @(
-        @{                 
-            "id"           = "6397893c-2260-496b-a41d-2f1f15b16ff3"
-            "type"         = "Scope"
-        },
-        @{                 
-            "id"           = "a849e696-ce45-464a-81de-e5c5b45519c1"
-            "type"         = "Scope"
-        },                 
-        @{                 
-            "id"           = "ad8b4a5c-eecd-431a-a46f-33c060012ae1"
-            "type"         = "Scope"
-        }                 
-    )                         
+    return
 }
 
-$requiredResourceAccessAZ  = @{
-    "resourceAppId"        = "00000002-0000-0000-c000-000000000000"
-    "resourceAccess"       = @(
-        @{                 
-            "id"           = "311a71cc-e848-46a1-bdf8-97ff7156d8e6"
-            "type"         = "Scope"
-        }                
-    )                         
-}                         
-                           
-$CorsRules = @{            
-    AllowedHeaders         = @("x-ms-meta-abc","x-ms-meta-data*","x-ms-meta-target*")
-    AllowedOrigins         = @("https://$($_TenantId).azurewebsites.net")
-    MaxAgeInSeconds        = 200
-    ExposedHeaders         = @("x-ms-meta-*")
-    AllowedMethods         = @("Get")
-}
+#Verify AzureRmRoleAssignment to logged on user
+If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
+    Write-Output "--------------------------------------------------------------------------------"
+    Write-Output "Validating AzureRmRoleAssignment"
+    Write-Output "--------------------------------------------------------------------------------"
 
-$aad_TenantId              = (Get-AzureRmTenant).TenantId
-$aad_ExternalApiId         = "https://$($DynamicsAXApiId).cloudax.dynamics.com"
-#endregion
+    #Get AzureRmRoleAssignment for currently logged on user
+    $AzureRmRoleAssignment = (Get-AzureRmRoleAssignment -SignInName $SignInName | Where-Object { $_.Scope -eq $Subscription } | Select-Object RoleDefinitionName).RoleDefinitionName
+
+    $AzureRmRoleAssignment
+
+    Write-Output ""
+
+    #Determine that the currently logged on user has appropriate permissions to run the script in their Azure subscription
+    If (-not ($AzureRmRoleAssignment -contains "Owner") -and -not ($AzureRmRoleAssignment -contains "Contributor")) {
+        Write-Host ""
+        Write-Warning "Owner or contributor permissions could not be verified for your subscription."
+        Write-Host ""
+        Write-Warning "See SignUp's GitHub for more info and help."
+        return
+    }
+}
 
 #region Create AzureRmResourceGroup
-If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue))
+If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue))
 {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -177,14 +264,19 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupNa
     Write-Output "--------------------------------------------------------------------------------"
 
     $AzureRmResourceGroupParams = @{
-        Name     = $ResourceGroupName
+        Name     = $DeploymentName
         Location = $Location
     }
 
-    $AzureRmResourceGroup = New-AzureRmResourceGroup @AzureRmResourceGroupParams
+    Try {
+        $AzureRmResourceGroup = New-AzureRmResourceGroup @AzureRmResourceGroupParams -ErrorAction Stop
+    } Catch {
+        Write-Error $_
+        return
+    }  
 
     $x = 0
-    While ((-not(Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10))
+    While ((-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10))
     {
         Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmResourceGroup status for $(5*$x) seconds" -ForegroundColor "cyan"
         Start-Sleep 5
@@ -197,37 +289,43 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupNa
 #endregion
 
 #region Create/Get AzureRmStorageAccount
-If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction SilentlyContinue))
+If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $DeploymentName -ErrorAction SilentlyContinue))
 {
 
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmStorageAccount"
     Write-Output "--------------------------------------------------------------------------------"
+    Write-Output "This process may take a few minutes..."
 
     $AzureRmStorageAccountParams = @{
-        Name              = $StorageAccountName
-        ResourceGroupName = $ResourceGroupName
-        Type              = $StorageType
+        Name              = $DeploymentName
+        ResourceGroupName = $DeploymentName
+        Type              = $ConfigurationData.Storage.Type
         Location          = $Location
     }
 
-    $AzureRmStorageAccount = New-AzureRmStorageAccount @AzureRmStorageAccountParams
+    Try {
+        $AzureRmStorageAccount = New-AzureRmStorageAccount @AzureRmStorageAccountParams -ErrorAction Stop
+    } Catch {
+        Write-Error $_
+        return
+    }
 
     Write-Output $AzureRmStorageAccount
 
-    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
-    $StorageContext = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $Keys[0].Value
+    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
+    $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName -StorageAccountKey $Keys[0].Value
 }
 Else
 {
-    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
-    $StorageContext = New-AzureStorageContext -StorageAccountName $StorageAccountName $Keys[0].Value
+    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
+    $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName $Keys[0].Value
 }
 #endregion
 
 #region Create AzureStorageContainer
-If ($AzureRmResourceGroup -and -not(Get-AzureStorageContainer -Name $StorageContainer -Context $StorageContext -ErrorAction SilentlyContinue))
+If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorageContainer -Name $ConfigurationData.Storage.Container -Context $StorageContext -ErrorAction SilentlyContinue))
 {
 
     Write-Output ""
@@ -236,7 +334,7 @@ If ($AzureRmResourceGroup -and -not(Get-AzureStorageContainer -Name $StorageCont
     Write-Output "--------------------------------------------------------------------------------"
 
     $AzureStorageContainerParams = @{
-        Name       = $StorageContainer
+        Name       = $ConfigurationData.Storage.Container
         Permission = "Off"
         Context    = $StorageContext
     }
@@ -247,34 +345,40 @@ If ($AzureRmResourceGroup -and -not(Get-AzureStorageContainer -Name $StorageCont
 #endregion
 
 #region Create AzureStorageCORSRule
-$cRules = Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+If ($StorageContext) {
+    $ConfigurationData.CorsRules.AllowedOrigins = ($ConfigurationData.CorsRules.AllowedOrigins).Replace("[TenantId]",$DeploymentName)
 
-$cUpdate = $False
-ForEach ($CorsRule in $CorsRules.Keys)
-{
-    If (!([string]$cRules.$CorsRule -eq [string]$CorsRules.$CorsRule))
+    $cRules = Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+
+    $cUpdate = $False
+    ForEach ($CorsRule in $ConfigurationData.CorsRules.Keys)
     {
-        $cUpdate = $True
-        Break
+        If (!([string]$cRules.$CorsRule -eq [string]$ConfigurationData.CorsRules.$CorsRule))
+        {
+            $cUpdate = $True
+            Break
+        }
     }
-}
 
-If ($cUpdate)
-{
+    If ($cUpdate)
+    {
+        Write-Output ""
+        Write-Output "--------------------------------------------------------------------------------"
+        Write-Output "Create AzureStorageCORSRule"
+        Write-Output "--------------------------------------------------------------------------------"
 
-    Write-Output ""
-    Write-Output "--------------------------------------------------------------------------------"
-    Write-Output "Create AzureStorageCORSRule"
-    Write-Output "--------------------------------------------------------------------------------"
-
-    Set-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext -CorsRules $CorsRules
-
-    Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+        Try {
+            Set-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext -CorsRules $ConfigurationData.CorsRules -ErrorAction Stop
+            Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+        } Catch {
+            Write-Error $_
+        }
+    }
 }
 #endregion
 
 #region Create AzureRmADApplication
-If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $WebApplicationName -ErrorAction SilentlyContinue))
+If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue))
 {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -284,31 +388,36 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
     $startDate                = Get-Date
     $psadCredential.StartDate = $startDate
-    $psadCredential.EndDate   = $startDate.AddYears(1)
+    $psadCredential.EndDate   = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
     $psadCredential.KeyId     = [guid]::NewGuid()
-    $psadKeyValue             = Create-AesKey
+    $psadKeyValue             = Set-AesKey
     $psadCredential.Password  = $psadKeyValue
 
     $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
-    $SecurePassword | Export-Clixml "$env:USERPROFILE\PSDAKey.xml"
+    $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
 
     Write-Output $psadCredential
+    Write-Output ""
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmADApplication"
     Write-Output "--------------------------------------------------------------------------------"
 
+
     $AzureRmADApplicationParams = @{
-        DisplayName         = $WebApplicationName
-        HomePage            = $HomePage
-        IdentifierUris      = $IdentifierUris
-        ReplyUrls           = $HomePage
+        DisplayName         = $DeploymentName
+        HomePage            = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx"
+        IdentifierUris      = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)"
+        ReplyUrls           = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx"
         PasswordCredentials = $psadCredential
     }
 
-    $AzureRmADApplication = New-AzureRmADApplication @AzureRmADApplicationParams
-
-    Write-Output $AzureRmADApplication
+    Try {
+        $AzureRmADApplication = New-AzureRmADApplication @AzureRmADApplicationParams -ErrorAction Stop
+        Write-Output $AzureRmADApplication
+    } Catch {
+        Write-Error $_
+    }   
 }
 Else
 {
@@ -316,10 +425,10 @@ Else
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    If (!(Test-Path -Path "$($env:USERPROFILE)\PSDAKey.csv" -ErrorAction SilentlyContinue))
+    If (Test-Path -Path $ConfigurationData.PSADCredential.ClixmlPath -ErrorAction SilentlyContinue)
     {
 
-        $SecurePassword = Import-Clixml "$env:USERPROFILE\PSDAKey.xml"
+        $SecurePassword = Import-Clixml $ConfigurationData.PSADCredential.ClixmlPath
         $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
 
         Write-Output $psadKeyValue
@@ -327,20 +436,24 @@ Else
     Else
     {
         Write-Warning "A PSADCredential could not be found, aborting"
-        exit
+        return
     }
 }
 #endregion
 
 #region Create AzureRmADServicePrincipal
-If (-not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue))
+If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue))
 {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmADServicePrincipal"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $AzureRmADServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $AzureRmADApplication.ApplicationId
+    Try {
+        $AzureRmADServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $AzureRmADApplication.ApplicationId -ErrorAction Stop
+    } Catch {
+        Write-Error $_
+    } 
 
     $x = 0
     While ($X -lt 6)
@@ -363,7 +476,7 @@ If (-not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchStrin
 #endregion
 
 #region Create AzureRmRoleAssignment
-If (-not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue))
+If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue))
 {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -386,7 +499,7 @@ If (-not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName 
         }
     }
 
-    Write-Output $AzureRmADServicePrincipal
+    Write-Output $AzureRmRoleAssignment
 }
 #endregion
 
@@ -396,22 +509,34 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Deploying Azure Resource Manager Template"
 Write-Output "--------------------------------------------------------------------------------"
 
+[bool]$ParamValidation = $True
+If (!$DeploymentName)                                                                                          { Write-Warning "Deployment name parameter could not be determined." ; $ParamValidation = $False}
+If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json") -ne 200)                         { Write-Warning "Template file location could not be verified." ; $ParamValidation = $False}
+If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)") -ne 200) { Write-Warning "Web application file location could not be verified." ; $ParamValidation = $False}
+If (!$AzureRmADApplication.ApplicationId)                                                                      { Write-Warning "Application ID parameter could not be verified." ; $ParamValidation = $False}
+If (!$psadKeyValue)                                                                                            { Write-Warning "PSADCredential secret could not be verified." ; $ParamValidation = $False}
+If (!$AzureRmADApplication.ApplicationId)                                                                      { Write-Warning "AAD client ID parameter could not be verified." ; $ParamValidation = $False}
+If (!$aad_TenantId)                                                                                            { Write-Warning "AAD tenant ID parameter could not be verified." ; $ParamValidation = $False}
+If (!$Keys[0].Value)                                                                                           { Write-Warning "Storage SAS key could not be verified." ; $ParamValidation = $False}
+
+If (!$ParamValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
+
 $TemplateParameters = @{
     Name                          = $DeploymentName
-    ResourceGroupName             = $AzureRmResourceGroup.ResourceGroupName
-    TemplateFile                  = "$($RedistPath)/WebSite.json"
-    webApplicationPackageFolder   = $RedistPath
-    WebApplicationPackageFileName = $FileName
-    WebSiteName                   = $WebApplicationName
-    StorageAccountName            = $StorageAccountName
-    hostingPlanName               = $WebApplicationName
+    ResourceGroupName             = $DeploymentName
+    TemplateFile                  = "$($ConfigurationData.RedistPath)/WebSite.json"
+    webApplicationPackageFolder   = $ConfigurationData.RedistPath
+    WebApplicationPackageFileName = $ConfigurationData.WebApplication
+    WebSiteName                   = $DeploymentName
+    StorageAccountName            = $DeploymentName
+    hostingPlanName               = $DeploymentName
     aad_ClientId                  = $AzureRmADApplication.ApplicationId
     aad_ClientSecret              = $psadKeyValue
     aad_TenantId                  = $aad_TenantId
-    aad_PostLogoutRedirectUri     = "$($IdentifierUris)/close.aspx?signedout=yes"
-    aad_ExternalApiId             = $aad_ExternalApiId
-    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
-    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageAccountName);AccountKey=$($Keys[0].Value);"
+    aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
+    aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
+    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($DeploymentName);AccountKey=$($Keys[0].Value);"
+    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($DeploymentName);AccountKey=$($Keys[0].Value);"
 }
 
 If ($Security_Admins)
@@ -431,11 +556,10 @@ While ($X -lt 3)
 #endregion
 
 #region Web App registration with Microsoft Graph REST Api
-$WebClient = New-Object System.Net.WebClient
 $SDKHeader = $True
-ForEach ($DllFile in $AzureSDKDlls)
+ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 {
-    If (!(Test-Path -Path "$($FilePath)\$($DllFile)" -ErrorAction SilentlyContinue))
+    If (!(Test-Path -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -ErrorAction SilentlyContinue))
     {
         If ($SDKHeader)
         {
@@ -445,8 +569,10 @@ ForEach ($DllFile in $AzureSDKDlls)
             Write-Output "--------------------------------------------------------------------------------"
             $SDKHeader = $False
         }
+
         Write-Output "Downloading: $($DllFile)"
-        $WebClient.DownloadFile("$($RedistPath)\$($DllFile)?raw=true", "$($FilePath)\$($DllFile)")
+
+        Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)/$($DllFile)"
     }
 }
 
@@ -454,9 +580,9 @@ $newGuid = [guid]::NewGuid()
 $guidToBytes = [System.Text.Encoding]::UTF8.GetBytes($newGuid)
 
 $mySecret = @{
-    "type"      = "Symmetric"
+    "type"      = $ConfigurationData.ApplicationRegistration.Type
     "usage"     = "Verify"
-    "endDate"   = [DateTime]::UtcNow.AddDays(365).ToString("u").Replace(" ", "T")
+    "endDate"   = [DateTime]::UtcNow.AddDays($ConfigurationData.ApplicationRegistration.Days).ToString("u").Replace(" ", "T")
     "keyId"     = $newGuid
     "startDate" = [DateTime]::UtcNow.AddDays(-1).ToString("u").Replace(" ", "T")
     "value"     = [System.Convert]::ToBase64String($guidToBytes)
@@ -466,23 +592,24 @@ $restPayload = @{
     "keyCredentials" = @($mySecret)
 }
 
-$restPayload.Add("requiredResourceAccess",@($requiredResourceAccess,$requiredResourceAccessAZ))
+$restPayload.Add("requiredResourceAccess",@($ConfigurationData.RequiredResourceAccess,$ConfigurationData.RequiredResourceAccessAZ))
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
-$tenantName = (Get-AzureRmTenant).Domain
-$token = GetAuthorizationToken -TenantName $tenantName
+$token = Get-AuthorizationToken -TenantName $tenantName
+
+Write-Output "ExpiresOn: $($token.ExpiresOn.DateTime)"
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
-    "Authorization" = $token.CreateAuthorizationHeader()
+    "Authorization" = $token.AccessToken
 }
 
-$restUri = "https://graph.windows.net/$($tenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=1.6"
+$restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($tenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
 
 $restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select -ExpandProperty requiredResourceAccess
 
-If ($restResourceAccess.resourceAppId -notcontains $requiredResourceAccess.resourceAppId)
+If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredResourceAccess.resourceAppId)
 {
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
@@ -495,12 +622,12 @@ Else
 {
     ForEach ($Resource in $restResourceAccess)
     {
-        If ($resourceAccess.resourceAppId -eq $requiredResourceAccess.resourceAppId)
+        If ($resourceAccess.resourceAppId -eq $ConfigurationData.RequiredResourceAccess.resourceAppId)
         {
             $resourceAccess = ($Resource | Select -ExpandProperty resourceAccess).id
 
             $updateResourceAccess = $False
-            ForEach ($id in $requiredResourceAccess.resourceAccess.id)
+            ForEach ($id in $ConfigurationData.RequiredResourceAccess.resourceAccess.id)
             {
                 If ($resourceAccess -notcontains $id)
                 {
@@ -527,10 +654,10 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Cleaning up Azure SDK DLL:s"
 Write-Output "--------------------------------------------------------------------------------"
 
-ForEach ($DllFile in $AzureSDKDlls)
+ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 {
     Write-Output "Removing: $($DllFile)"
-    Remove-Item -Path "$($FilePath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
 }
 #endregion
 
@@ -539,7 +666,7 @@ $Measure.Stop()
 Write-Output ""
 Write-Output ""
 Write-Output "Browse to the following URL to initialize the application:"
-Write-Host $HomePage -ForegroundColor Green
+Write-Host "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -ForegroundColor Green
 
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
