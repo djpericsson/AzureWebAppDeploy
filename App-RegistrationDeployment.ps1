@@ -30,19 +30,19 @@ Clear-Host
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 
-$Webclient                       = New-Object System.Net.Webclient
-$Webclient.UseDefaultCredentials = $true
-$Webclient.Proxy.Credentials     = $Webclient.Credentials
-$Webclient.Encoding              = [System.Text.Encoding]::UTF8
-$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
-$Webclient.DownloadString('https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/ConfigurationData.psd1')
-$Webclient.DownloadString('https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Helper-Module.psm1')
 
 #Import script parameters and variables from a configuration data file
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
+
+(New-Object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Helper-Module.psm1", "$PSScriptRoot\Helper-Module.psm1")
+
+$cConfigurationData = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/ConfigurationData.psd1")
+
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData $cConfigurationData
+
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
 
