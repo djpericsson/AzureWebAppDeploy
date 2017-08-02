@@ -27,7 +27,15 @@ param(
 
 Clear-Host
 
+#Source code repo URL
 $Repo = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master"
+
+#We client download options
+$Webclient                       = New-Object System.Net.Webclient
+$Webclient.UseDefaultCredentials = $true
+$Webclient.Proxy.Credentials     = $Webclient.Credentials
+$Webclient.Encoding              = [System.Text.Encoding]::UTF8
+$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
@@ -38,10 +46,10 @@ Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
 
 #Download the Helper-Module
-(New-Object Net.WebClient).DownloadString("$Repo/Helper-Module.ps1") | Invoke-Expression
+$Webclient.DownloadString("$Repo/Helper-Module.ps1") | Invoke-Expression
 
 #Download and convert the configuration data file as Hash Table
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ((New-Object Net.WebClient).DownloadString("$Repo/ConfigurationData.psd1") | Invoke-Expression)
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$Repo/ConfigurationData.psd1") | Invoke-Expression)
 
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
