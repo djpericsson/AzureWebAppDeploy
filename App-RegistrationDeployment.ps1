@@ -27,21 +27,19 @@ param(
 
 Clear-Host
 
+$Repo = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master"
+
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
-
-
 
 #Import script parameters and variables from a configuration data file
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
 
-(New-Object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Helper-Module.psm1", "$PSScriptRoot\Helper-Module.psm1")
+(New-Object Net.WebClient).DownloadString("$Repo/Helper-Module.ps1") | Invoke-Expression
 
-$cConfigurationData = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/ConfigurationData.psd1")
-
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData $cConfigurationData
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ((New-Object Net.WebClient).DownloadString("$Repo/ConfigurationData.psd1") | Invoke-Expression)
 
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
