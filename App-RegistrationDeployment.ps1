@@ -44,9 +44,6 @@ Write-Output "------------------------------------------------------------------
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
 
-#Import the helper module to memory
-Import-Module "$PSScriptRoot\Helper-Module.psm1" -Force
-
 #Convert the configuration data file as Hash Table
 [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData "$PSScriptRoot\ConfigurationData.psd1"
 
