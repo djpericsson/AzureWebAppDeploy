@@ -1,6 +1,6 @@
-﻿$Location                  = "westeurope"
+﻿$Location                  = "northeurope"
 $Security_Admins           = "ADMPEER"
-$DynamicsAXApiId           = "axtestdynamics365aos"
+$DynamicsAXApiId           = "axtestdynamics365aos-adl.cloudax.dynamics.com"
 
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true

@@ -1,13 +1,13 @@
 ﻿#Parameters for input as arguments or parameters
 param(
-    [Parameter(Mandatory=$False)]
-    [string]$Location = "northeurope",
+    [Parameter(Mandatory=$True)]
+    [string]$Location,
 
-    [Parameter(Mandatory=$False)]
-    [string]$Security_Admins = "JOHANB,JERRY",
+    [Parameter(Mandatory=$True)]
+    [string]$Security_Admins,
 
-    [Parameter(Mandatory=$False)]
-    [string]$DynamicsAXApiId = "axtestdynamics365aos-adl.cloudax.dynamics.com",
+    [Parameter(Mandatory=$True)]
+    [string]$DynamicsAXApiId,
 
     [Parameter(Mandatory=$False)]
     [string]$ExFlowUserSecret,
