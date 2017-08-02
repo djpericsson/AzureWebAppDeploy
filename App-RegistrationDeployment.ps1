@@ -37,15 +37,14 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
 
+#Download the Helper-Module
 (New-Object Net.WebClient).DownloadString("$Repo/Helper-Module.ps1") | Invoke-Expression
 
+#Download and convert the configuration data file as Hash Table
 [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ((New-Object Net.WebClient).DownloadString("$Repo/ConfigurationData.psd1") | Invoke-Expression)
 
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
-
-#Convert the configuration data file as Hash Table
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData "$PSScriptRoot\ConfigurationData.psd1"
 
 #region Checking PowerShell version and modules
 Write-Output "--------------------------------------------------------------------------------"
