@@ -45,11 +45,26 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
 
+$DependencyValidation = $True
+
 #Download the Helper-Module
-$Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
+If ($(Get-UrlStatusCode -Url "$RepoURL/Helper-Module.ps1") -ne 200) {
+    Write-Warning "Helper-Module location could not be verified."
+    $DependencyValidation = $False
+} Else {
+    $Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
+}
+
 
 #Download and convert the configuration data file as Hash Table
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
+If ($(Get-UrlStatusCode -Url "$RepoURL/ConfigurationData.psd1") -ne 200) {
+    Write-Warning "ConfigurationData.psd1 location could not be verified."
+    $DependencyValidation = $False
+} Else {
+    [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
+}
+
+If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
