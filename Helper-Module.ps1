@@ -160,23 +160,6 @@ Function Get-TruncatedStringHash
     $StringBuilder.ToString().Substring(0,$Length)
 }
 
-Function Get-UrlStatusCode
-{
-    Param
-    (
-        [ValidateNotNullOrEmpty()]
-        [String]$Url
-    )
-    try
-    {
-        (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
-    }
-    catch [Net.WebException]
-    {
-        [int]$_.Exception.Response.StatusCode
-    }
-}
-
 Function Get-WebDownload
 {
     param(

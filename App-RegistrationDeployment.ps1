@@ -28,6 +28,23 @@ param(
     [string]$WebAppSubscriptionGuid
 )
 
+Function Get-UrlStatusCode
+{
+    Param
+    (
+        [ValidateNotNullOrEmpty()]
+        [String]$Url
+    )
+    try
+    {
+        (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
+    }
+    catch [Net.WebException]
+    {
+        [int]$_.Exception.Response.StatusCode
+    }
+}
+
 Clear-Host
 
 #We client download options
