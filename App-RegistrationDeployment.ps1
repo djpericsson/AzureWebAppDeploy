@@ -52,7 +52,7 @@ $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
 $Webclient.Proxy.Credentials     = $Webclient.Credentials
 $Webclient.Encoding              = [System.Text.Encoding]::UTF8
-$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
+#$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
@@ -656,7 +656,7 @@ $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
 $token = Get-AuthorizationToken -TenantName $tenantName
 
-Write-Output "Lifetime: $($token.Lifetime)"
+Write-Output "ExpiresOn: $($token.ExpiresOn.LocalDateTime)"
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
