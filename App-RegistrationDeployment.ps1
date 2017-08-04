@@ -245,6 +245,7 @@ If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -Err
 }
 Else {
     Write-Output "Existing deployment detected"
+    Write-Output ""
 }
 
 <#
@@ -278,6 +279,8 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
         return
     }
 }
+
+break
 
 #region Create AzureRmResourceGroup
 If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue))
