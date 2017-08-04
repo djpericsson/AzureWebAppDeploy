@@ -281,8 +281,6 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
     }
 }
 
-break
-
 #region Create AzureRmResourceGroup
 If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue))
 {
