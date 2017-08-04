@@ -236,6 +236,7 @@ If (!$DeploymentName) { Write-Warning "A deployment name could not be generated.
 
 If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
     Write-Output "New deployment detected"
+    Write-Output ""
     If (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)) {
         Write-Warning "A unique AzureRm DNS name could not be automatically determined."
     }
