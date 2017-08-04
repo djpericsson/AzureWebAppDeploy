@@ -9,6 +9,9 @@ param(
     [Parameter(Mandatory=$True)]
     [string]$DynamicsAXApiId,
 
+    [Parameter(Mandatory=$True)]
+    [string]$RepoURL,
+
     [Parameter(Mandatory=$False)]
     [string]$ExFlowUserSecret,
 
@@ -27,9 +30,6 @@ param(
 
 Clear-Host
 
-#Source code repo URL
-$Repo = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master"
-
 #We client download options
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
@@ -46,10 +46,10 @@ Write-Output "Importing configuration"
 Write-Output "--------------------------------------------------------------------------------"
 
 #Download the Helper-Module
-$Webclient.DownloadString("$Repo/Helper-Module.ps1") | Invoke-Expression
+$Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
 
 #Download and convert the configuration data file as Hash Table
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$Repo/ConfigurationData.psd1") | Invoke-Expression)
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
 
 Write-Output "$PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
@@ -78,24 +78,24 @@ If ($hasErrors) {
 }
 #endregion
 
-<#
 #get the zip-file
-Write-Output "--------------------------------------------------------------------------------"
-Write-Output "Checking package"
-Write-Output "--------------------------------------------------------------------------------"
+If ($ExFlowUserSecret) {
+    Write-Output "--------------------------------------------------------------------------------"
+    Write-Output "Checking package"
+    Write-Output "--------------------------------------------------------------------------------"
 
-$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/packages?s='+$ExFlowUserSecret+'&v='+$PackageVersion)
+    $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/packages?s="+$ExFlowUserSecret+"&v="+$PackageVersion)
 
-Write-Output "Package URL: " 
-Write-Output $packageURL
-Write-Output ""
+    Write-Output "Package URL: " 
+    Write-Output $packageURL
+    Write-Output ""
 
-$packgeUrlAr   = $packageURL.Split("?")
-$packageSAS    = "package.zip?"+$packgeUrlAr[1]
-$packageFolder = $packgeUrlAr[0].replace("/package.zip","")
+    $packgeUrlAr   = $packageURL.Split("?")
+    $packageSAS    = "$($ConfigurationData.WebApplication)?"+$packgeUrlAr[1]
+    $packageFolder = $packgeUrlAr[0].replace("/$($ConfigurationData.WebApplication)","")
+}
+#endregion 
 
-#endregion
-#>
 
 #Import used AzureRM modules to memory
 If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
@@ -223,16 +223,38 @@ $Tenant
 #endregion
 
 #Call function to set deployment name for resources based on DynamicsAXApiId name
+
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Determining deployment name and availability"
+Write-Output "--------------------------------------------------------------------------------"
+
 $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId
+
+Write-Output "Deployment name: $DeploymentName"
 
 If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
 
+If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
+    Write-Output "New deployment detected"
+    If (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)) {
+        Write-Warning "A unique AzureRm DNS name could not be automatically determined."
+    }
+    If (Resolve-DnsName -Name "$($DeploymentName).$($ConfigurationData.AzureRmDomain)" -ErrorAction SilentlyContinue) {
+        Write-Warning "A unique DNS name could not be automatically determined."
+    }
+}
+Else {
+    Write-Output "Existing deployment detected"
+}
+
+<#
 If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue) -and `
    (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)))
 {
     Write-Warning "A unique AzureRm DNS name could not be automatically determined."
     return
 }
+#>
 
 #Verify AzureRmRoleAssignment to logged on user
 If ($ConfigurationData.AzureRmRoleAssignmentValidation) {

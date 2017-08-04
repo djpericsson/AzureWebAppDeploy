@@ -5,6 +5,7 @@
     PowerShellVersion               = "5.0.0"
                                     
     RedistPath                      = "https://github.com/djpericsson/AzureWebAppDeploy/raw/master"
+    PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
                                     
     WebApplication                  = "package.zip"
