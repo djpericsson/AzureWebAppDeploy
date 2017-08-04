@@ -656,7 +656,7 @@ $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
 $token = Get-AuthorizationToken -TenantName $tenantName
 
-Write-Output "ExpiresOn: $($token.ExpiresOn.DateTime)"
+Write-Output "Lifetime: $($token.Lifetime)"
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
