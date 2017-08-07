@@ -104,6 +104,7 @@ Try { Invoke-Logger -Message $ConfigurationData -Severity I -Category "Configura
 
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
+Write-Output "Helper-Module: $PSScriptRoot\Helper-Module.ps1"
 Write-Output "ConfigurationData: $PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
 
