@@ -654,9 +654,9 @@ Write-Output "Deploying Azure Resource Manager Template"
 Write-Output "--------------------------------------------------------------------------------"
 
 [bool]$ParamValidation = $True
-If (!$DeploymentName)
+If (!$DeploymentName)                               { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
-$UrlStatusCode = Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json"                                                                                                          { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+$UrlStatusCode = Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json" 
 If ($UrlStatusCode -ne 200)                         { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message,"Url: $($ConfigurationData.RedistPath)/WebSite.json","StatusCode: $($UrlStatusCode)" -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
 $UrlStatusCode = Get-UrlStatusCode -Url  "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)"
