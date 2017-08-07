@@ -69,7 +69,7 @@ $StatusCodeHelper = Get-UrlStatusCode -Url "$RepoURL/Helper-Module.ps1"
 If ($StatusCodeHelper -ne 200) {
     Write-Warning "Helper-Module location could not be verified."
     Write-Warning "Url: $RepoURL/Helper-Module.ps1"
-    Write-Warning "UrlStatusCode $StatusCodeHelper"
+    Write-Warning "StatusCode $StatusCodeHelper"
     $DependencyValidation = $False
 } Else {
     $Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
@@ -80,7 +80,7 @@ $StatusCodeConfiguration = Get-UrlStatusCode -Url "$RepoURL/ConfigurationData.ps
 If ($StatusCodeConfiguration -ne 200) {
     Write-Warning "ConfigurationData.psd1 location could not be verified."
     Write-Warning "Url: $RepoURL/ConfigurationData.psd1"
-    Write-Warning "UrlStatusCode $StatusCodeConfiguration"
+    Write-Warning "StatusCode $StatusCodeConfiguration"
     $DependencyValidation = $False
 } Else {
     [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
@@ -92,11 +92,11 @@ Write-Host $LogFile
 
 Invoke-Logger -Message "Helper-Module location could not be verified." -Severity W -Category "Helper-Module"
 Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity W -Category "Helper-Module"
-Invoke-Logger -Message "UrlStatusCode $UrlStatusCode" -Severity W -Category "Helper-Module"
+Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity W -Category "Helper-Module"
 
 Invoke-Logger -Message "ConfigurationData.psd1 location could not be verified." -Severity W -Category "Configuration"
 Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity W -Category "Configuration"
-Invoke-Logger -Message "UrlStatusCode $UrlStatusCode" -Severity W -Category "Configuration"
+Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity W -Category "Configuration"
 
 break
 
