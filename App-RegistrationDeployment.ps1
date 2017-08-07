@@ -161,8 +161,6 @@ Write-Output "------------------------------------------------------------------
 #Determine logon status
 $AzureRmLogon.GetType() = Get-AzureRmContext -ErrorAction Stop
 
-(($AzureRmLogon.GetType()).BaseType).Name
-
 If (!$AzureRmLogon.Account) {
 
     #Determine if manual subscription id was provided
