@@ -71,7 +71,7 @@ $StatusCodeHelper = Get-UrlStatusCode -Url "$RepoURL/Helper-Module.ps1"
 If ($StatusCodeHelper -ne 200) {
     Write-Warning "Helper-Module location could not be verified."
     Write-Warning "Url: $RepoURL/Helper-Module.ps1"
-    Write-Warning "StatusCode $StatusCodeHelper"
+    Write-Warning "StatusCode: $StatusCodeHelper"
     $DependencyValidation = $False
 } Else {
     $Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
@@ -82,7 +82,7 @@ $StatusCodeConfiguration = Get-UrlStatusCode -Url "$RepoURL/ConfigurationData.ps
 If ($StatusCodeConfiguration -ne 200) {
     Write-Warning "ConfigurationData.psd1 location could not be verified."
     Write-Warning "Url: $RepoURL/ConfigurationData.psd1"
-    Write-Warning "StatusCode $StatusCodeConfiguration"
+    Write-Warning "StatusCode: $StatusCodeConfiguration"
     $DependencyValidation = $False
 } Else {
     [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
