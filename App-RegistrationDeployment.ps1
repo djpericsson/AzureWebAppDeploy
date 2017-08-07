@@ -88,7 +88,7 @@ If ($StatusCodeConfiguration -ne 200) {
 
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
-Write-Host "LogFile: $LogFile" -ForegroundColor Blue
+Write-Host "LogFile: $LogFile" -ForegroundColor Green
 
 Try { Invoke-Logger -Message "Helper-Module location was successfully verified" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
@@ -814,7 +814,7 @@ $Measure.Stop()
 Write-Output ""
 Write-Output ""
 Write-Output "Log file location:"
-Write-Host $LogFile -ForegroundColor Blue
+Write-Host $LogFile -ForegroundColor Green
 
 Write-Output ""
 Write-Output ""
