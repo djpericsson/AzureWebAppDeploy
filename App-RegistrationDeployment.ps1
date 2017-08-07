@@ -90,13 +90,13 @@ If ($StatusCodeConfiguration -ne 200) {
 
 Write-Host "LogFile: $LogFile" -ForegroundColor Green
 
-Try { Invoke-Logger -Message "Helper-Module location was successfully verified" -Severity I -Category "Helper-Module" } Catch {}
-Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
-Try { Invoke-Logger -Message "StatusCode $StatusCodeHelper" -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "Location: $Location" -Severity I -Category "Parameters" } Catch {}
+Try { Invoke-Logger -Message "Security_Admins: $Security_Admins" -Severity I -Category "Parameters" } Catch {}
+Try { Invoke-Logger -Message "DynamicsAXApiId: $DynamicsAXApiId" -Severity I -Category "Parameters" } Catch {}
+Try { Invoke-Logger -Message "RepoURL: $RepoURL" -Severity I -Category "Parameters" } Catch {}
 
-Try { Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified" -Severity I -Category "Configuration" } Catch {}
-Try { Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
-Try { Invoke-Logger -Message "StatusCode $StatusCodeConfiguration" -Severity I -Category "Configuration" } Catch {}
+Try { Invoke-Logger -Message "Helper-Module: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "ConfigurationData.psd1: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
 
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
@@ -820,7 +820,7 @@ Write-Output ""
 Write-Output ""
 Write-Output "Browse to the following URL to initialize the application:"
 Write-Host "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -ForegroundColor Green
-Try { Invoke-Logger -Message "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -Severity I -Category "WebApp" } Catch {}
+Try { Invoke-Logger -Message "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -Severity I -Category "WebApplication" } Catch {}
 
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
