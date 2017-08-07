@@ -35,14 +35,16 @@ Function Get-UrlStatusCode
         [ValidateNotNullOrEmpty()]
         [String]$Url
     )
+    [int]$StatusCode = $null
     try
     {
-        (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
+        $StatusCode = (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
     }
     catch [Net.WebException]
     {
-        [int]$_.Exception.Response.StatusCode
+        $StatusCode = [int]$_.Exception.Response.StatusCode
     }
+    return $StatusCode
 }
 
 Clear-Host
