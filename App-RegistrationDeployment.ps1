@@ -768,6 +768,8 @@ If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredRe
 }
 Else
 {
+    Try { Invoke-Logger -Message $restResourceAccess.resourceAppId -Severity I -Category "Graph" } Catch {}
+
     ForEach ($Resource in $restResourceAccess)
     {
         If ($resourceAccess.resourceAppId -eq $ConfigurationData.RequiredResourceAccess.resourceAppId)
