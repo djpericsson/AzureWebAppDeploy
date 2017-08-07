@@ -88,11 +88,11 @@ If ($StatusCodeConfiguration -ne 200) {
 
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
-Try { Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "Helper-Module location was successfully verified" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "StatusCode $StatusCodeHelper" -Severity I -Category "Helper-Module" } Catch {}
 
-Try { Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified." -Severity I -Category "Configuration" } Catch {}
+Try { Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified" -Severity I -Category "Configuration" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
 Try { Invoke-Logger -Message "StatusCode $StatusCodeConfiguration" -Severity I -Category "Configuration" } Catch {}
 
@@ -175,7 +175,7 @@ If (!$AzureRmLogon.Account) {
     }
 
     #If logon failed abort script
-    If (!$AzureRmLogon) { Try { Invoke-Logger -Message "Logon to Azure failed." -Severity E -Category "Logon" } Catch {} ; return }
+    If (!$AzureRmLogon) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity E -Category "Logon" } Catch {} ; return }
 
     #Determine Azure subscription
     If (-not($AzureRmLogon.Context.Subscription)){
@@ -287,6 +287,8 @@ Write-Output "Tenant information"
 Write-Output "--------------------------------------------------------------------------------"
 
 $Tenant
+
+Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 #endregion
 
 #Call function to set deployment name for resources based on DynamicsAXApiId name
@@ -299,20 +301,30 @@ $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId
 
 Write-Output "Deployment name: $DeploymentName"
 
+Try { Invoke-Logger -Message "Deployment name: $DeploymentName" -Severity I -Category "Deployment" } Catch {}
+
 If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
 
 If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
-    Write-Output "New deployment detected"
+    $Message = "New deployment detected"
+    Write-Output $Message
+    Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     Write-Output ""
     If (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)) {
-        Write-Warning "A unique AzureRm DNS name could not be automatically determined."
+        $Message = "A unique AzureRm DNS name could not be automatically determined"
+        Write-Warning $Message
+        Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     }
     If (Resolve-DnsName -Name "$($DeploymentName).$($ConfigurationData.AzureRmDomain)" -ErrorAction SilentlyContinue) {
-        Write-Warning "A unique DNS name could not be automatically determined."
+        $Message = "A unique DNS name could not be automatically determined"
+        Write-Warning $Message
+        Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     }
 }
 Else {
-    Write-Output "Existing deployment detected"
+    $Message = "Existing deployment detected"
+    Write-Output $Message
+    Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     Write-Output ""
 }
 
@@ -336,6 +348,8 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
 
     $AzureRmRoleAssignment
 
+    Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
+
     Write-Output ""
 
     #Determine that the currently logged on user has appropriate permissions to run the script in their Azure subscription
@@ -344,6 +358,9 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
         Write-Warning "Owner or contributor permissions could not be verified for your subscription."
         Write-Host ""
         Write-Warning "See SignUp's GitHub for more info and help."
+
+        Try { Invoke-Logger -Message "Owner or contributor permissions could not be verified for your subscription" -Severity W -Category "AzureRmRoleAssignment" } Catch {}
+
         return
     }
 }
@@ -365,6 +382,7 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName 
         $AzureRmResourceGroup = New-AzureRmResourceGroup @AzureRmResourceGroupParams -ErrorAction Stop
     } Catch {
         Write-Error $_
+        Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmResourceGroup" } Catch {}
         return
     }  
 
@@ -377,6 +395,7 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName 
     }
 
     Write-Output $AzureRmResourceGroup
+    Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 
 }
 #endregion
@@ -402,18 +421,27 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
         $AzureRmStorageAccount = New-AzureRmStorageAccount @AzureRmStorageAccountParams -ErrorAction Stop
     } Catch {
         Write-Error $_
+        Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmStorageAccount" } Catch {}
         return
     }
 
     Write-Output $AzureRmStorageAccount
 
+    Try { Invoke-Logger -Message $AzureRmStorageAccount -Severity I -Category "AzureRmStorageAccount" } Catch {}
+
     $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
     $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName -StorageAccountKey $Keys[0].Value
+
+    Try { Invoke-Logger -Message $Keys -Severity I -Category "AzureRmStorageAccount" } Catch {}
+    Try { Invoke-Logger -Message $StorageContext -Severity I -Category "AzureRmStorageAccount" } Catch {}
 }
 Else
 {
     $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
     $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName $Keys[0].Value
+
+    Try { Invoke-Logger -Message $Keys -Severity I -Category "AzureRmStorageAccount" } Catch {}
+    Try { Invoke-Logger -Message $StorageContext -Severity I -Category "AzureRmStorageAccount" } Catch {}
 }
 #endregion
 
@@ -433,6 +461,8 @@ If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorage
     }
 
     New-AzureStorageContainer @AzureStorageContainerParams
+
+    Try { Invoke-Logger -Message $AzureStorageContainerParams -Severity I -Category "AzureStorageContainer" } Catch {}
 
 }
 #endregion
