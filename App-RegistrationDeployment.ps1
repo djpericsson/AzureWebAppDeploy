@@ -565,7 +565,7 @@ Else
         $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
 
         Write-Output $psadKeyValue
-        Try { Invoke-Logger -Message $psadKeyValue -Severity I -Category "PSADCredential" } Catch {}
+        Try { Invoke-Logger -Message "*****" -Severity I -Category "PSADCredential" } Catch {}
     }
     Else
     {

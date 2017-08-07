@@ -316,13 +316,7 @@ Function Invoke-Logger
                 ForEach ($prop in $Message.PSObject.Properties)
                 {
                     If ($prop.Value) {
-                        If (-not($prop.Name) -eq "Password") {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
-                        }
-                        ElseIf (-not($prop.Name) -eq "AccessToken") {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
-                        }
-                        ElseIf (-not($prop.Name) -eq "AzureRmStorageAccount") {
+                        If (($prop.Name -eq "Password") -or ($prop.Name -eq "AccessToken") -or ($prop.Name -eq "AzureRmStorageAccount")) {
                             Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
                         }
                         Else {
