@@ -27,14 +27,17 @@ Function Get-RequiredModules
         If (!$cModule) {
             Write-Warning "Module $($Module.Name) is not installed."
             Write-Warning "`tInstall-Module -Name $($Module.Name)"
+            Try { Invoke-Logger -Message "Module $($Module.Name) is not installed." -Severity W -Category "PSModule" } Catch {}
             $hasErrors = $True
         } Else {
             If ($cModule.Version -lt $Module.MinimumVersion) {
                 Write-Warning "Module $($Module.Name) must be updated."
                 Write-Warning "`tInstall-Module -Name $($Module.Name) -AllowClobber -Force"
+                Try { Invoke-Logger -Message "Module $($Module.Name) must be updated." -Severity W -Category "PSModule" } Catch {}
                 $hasErrors = $True
             } Else {
                 Write-Host "Module $($Module.Name) version $($cModule.Version) is valid."
+                Try { Invoke-Logger -Message "Module $($Module.Name) version $($cModule.Version) is valid." -Severity I -Category "PSModule" } Catch {}
             }
         }
     }

@@ -111,10 +111,14 @@ $hasErrors = Get-RequiredModules -Modules $ConfigurationData.Modules
 
 #Verify installed PowerShell version against the configuration data file
 If ($PSVersionTable.PSVersion -lt $ConfigurationData.PowerShell.Version) {
-    Write-Warning "PowerShell must be updated to at least $($ConfigurationData.PowerShell.Version). See SignUp's GitHub for more info and help."
+    $Message = "PowerShell must be updated to at least $($ConfigurationData.PowerShell.Version)."
+    Write-Warning $Message
+    Try { Invoke-Logger -Message $Message -Severity W -Category "PowerShell" } Catch {}
     $hasErrors = $True
 } Else {
-    Write-Host "PowerShell version $($PSVersionTable.PSVersion) is valid."
+    $Message = "PowerShell version $($PSVersionTable.PSVersion) is valid."
+    Write-Host $Message
+    Try { Invoke-Logger -Message $Message -Severity I -Category "PowerShell" } Catch {}
     Write-Host ""
 }
 
@@ -137,16 +141,19 @@ If ($ExFlowUserSecret) {
     Write-Output $packageURL
     Write-Output ""
 
+    Try { Invoke-Logger -Message "Package URL: $packageURL" -Severity I -Category "Package" } Catch {}
+
     $packgeUrlAr   = $packageURL.Split("?")
     $packageSAS    = "$($ConfigurationData.WebApplication)?"+$packgeUrlAr[1]
     $packageFolder = $packgeUrlAr[0].replace("/$($ConfigurationData.WebApplication)","")
 }
 #endregion 
 
-
 #Import used AzureRM modules to memory
 If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
 If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue))    { Import-Module AzureRM.Profile }
+
+break
 
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
