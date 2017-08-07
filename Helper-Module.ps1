@@ -302,12 +302,21 @@ Function Invoke-Logger
             {
                 Get-RecursiveProperties -Value $Message
             }
-            Else
+            ElseIf (($Message.GetType()).Name -eq "String")
             {
                 ForEach ($Line in $Message)
                 {
                     If (-not($Line -eq "")) {
                         Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
+                    }
+                }
+            }
+            Else
+            {
+                ForEach ($prop in $Message.PSObject.Properties)
+                {
+                    If ($prop.Value) {
+                        Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
                     }
                 }
             }
