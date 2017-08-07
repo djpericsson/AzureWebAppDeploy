@@ -90,13 +90,13 @@ If ($StatusCodeConfiguration -ne 200) {
 
 Write-Host $LogFile
 
-Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module"
-Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module"
-Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Helper-Module"
+Try { Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Helper-Module" } Catch {}
 
-Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified." -Severity I -Category "Configuration"
-Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration"
-Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Configuration"
+Try { Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified." -Severity I -Category "Configuration" } Catch {}
+Try { Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
+Try { Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Configuration" } Catch {}
 
 break
 
