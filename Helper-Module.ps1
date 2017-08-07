@@ -249,6 +249,35 @@ Function Set-AesKey() {
     [System.Convert]::ToBase64String($aesManaged.Key)
 }
 
+Function Get-RecursiveHashTable {
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        $Object,
+
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullorEmpty()]
+        [String]$Category
+    )
+    $date = [datetime]::UtcNow
+    ForEach ($prop in $Object.Keys)
+    {
+        If ($prop) {
+            If (($($Object.$prop).GetType()).Name -eq "Hashtable") {
+                Get-RecursiveHashTable -Object ($Object.$prop) -Category $Category
+            }
+            Else {
+                If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection")) {
+                    Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [INFO] [$($Category)] [$($prop): *****]"
+                }
+                Else {
+                    Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [INFO] [$($Category)] [$($prop): $($Object.$prop)]"
+                }
+            }
+        }
+    }
+}
+
 Function Invoke-Logger
 {
     param(
@@ -300,17 +329,7 @@ Function Invoke-Logger
         {
             If (($Message.GetType()).Name -eq "Hashtable")
             {
-                ForEach ($prop in $Message.Keys)
-                {
-                    If ($prop) {
-                        If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection")) {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): *****]"
-                        }
-                        Else {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): $($Message.$prop)]"
-                        }
-                    }
-                }
+                Get-RecursiveHashTable -Object $Message
             }
             ElseIf (($Message.GetType()).Name -eq "String")
             {

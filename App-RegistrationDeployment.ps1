@@ -88,6 +88,8 @@ If ($StatusCodeConfiguration -ne 200) {
     [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
 }
 
+Get-RecursiveHashTable -Object $ConfigurationData -Category "Configuration"
+
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
 Write-Host "LogFile: $LogFile" -ForegroundColor Green
