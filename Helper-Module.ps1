@@ -302,6 +302,10 @@ Function Invoke-Logger
             {
                 Get-RecursiveProperties -Value $Message
             }
+            ElseIf ((($Message.GetType()).BaseType).Name -eq "Object")
+            {
+                Get-RecursiveProperties -Value $Message
+            }
             Else
             {
                 ForEach ($Line in $Message)
