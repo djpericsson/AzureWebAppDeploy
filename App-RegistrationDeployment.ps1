@@ -741,7 +741,7 @@ $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 $token = Get-AuthorizationToken -TenantName $tenantName
 
 Write-Output "ExpiresOn: $($token.ExpiresOn.LocalDateTime)"
-Try { Invoke-Logger -Message "ExpiresOn: $($token.ExpiresOn.LocalDateTime)" -Severity I -Category "Token" } Catch {}
+Try { Invoke-Logger -Message $token -Severity I -Category "Token" } Catch {}
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
@@ -751,6 +751,9 @@ $authorizationHeader = @{
 $restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($tenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
 
 $restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select -ExpandProperty requiredResourceAccess
+
+Try { Invoke-Logger -Message "GET: $restUri" -Severity I -Category "Graph" } Catch {}
+Try { Invoke-Logger -Message $restResourceAccess -Severity I -Category "Graph" } Catch {}
 
 If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredResourceAccess.resourceAppId)
 {
