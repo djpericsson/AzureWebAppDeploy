@@ -712,7 +712,7 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
         }
 
         Write-Output "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)"
-        Try { Invoke-Logger -Message "Downloading: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
+        Try { Invoke-Logger -Message "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
 
         Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)/$($DllFile)"
     }
@@ -804,7 +804,7 @@ Write-Output "------------------------------------------------------------------
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 {
     Write-Output "Removing: $($ConfigurationData.LocalPath)\$($DllFile)"
-    Try { Invoke-Logger -Message "Removing: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
+    Try { Invoke-Logger -Message "Removing: $($ConfigurationData.LocalPath)\$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
     Remove-Item -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
 }
 #endregion
