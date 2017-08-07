@@ -245,3 +245,78 @@ Function Set-AesKey() {
     $aesManaged.GenerateKey()
     [System.Convert]::ToBase64String($aesManaged.Key)
 }
+
+Function Invoke-Logger
+{
+    param(
+        [String]$Severity,
+
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullorEmpty()]
+        [String]$Category,
+
+        $Message,
+
+        $Error
+    )
+
+    Switch ($Severity) 
+    { 
+        "I"     { $Severity = "INFO" }
+        "D"     { $Severity = "DEBUG" }
+        "W"     { $Severity = "WARNING" }
+        "E"     { $Severity = "ERROR"}
+        default { $Severity = "INFO" }
+    }
+
+    $date = [datetime]::UtcNow
+    
+    For ($x=$Severity.Length; $x -le 6; $x++)  { $Severity = $Severity+" " }
+    For ($x=$Category.Length; $x -le 7; $x++) { $Category = $Category+" " }
+
+    If ($Error)
+    {
+        ForEach ($Line in $Message)
+        {
+            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
+        }
+        If ($Error.Exception.Message) { Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Error.Exception.Message)]" }
+        If ($Error.Exception.Innerexception) { Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Error.Exception.Innerexception)]" }
+        If ($Error.InvocationInfo.PositionMessage) {
+            ForEach ($Line in $Error.InvocationInfo.PositionMessage.Split("`n"))
+            {
+                Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
+            }
+        }
+    }
+    Else
+    {
+        If ($Message)
+        {
+            If (($Message.GetType()).Name -eq "Hashtable")
+            {
+                Get-RecursiveProperties -Value $Message
+            }
+            Else
+            {
+                ForEach ($Line in $Message)
+                {
+                    Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
+                }
+            }
+        }
+    }
+
+}
+
+Function Write-Log
+{
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullorEmpty()]
+        $Message
+    )
+    [String]$LogFile = "$($PSScriptRoot)\$(Get-Date -Format "yyyy-MM-dd")_cMDT.log"
+    Out-File -FilePath $LogFile -InputObject $Message -Encoding utf8 -Append -NoClobber
+}

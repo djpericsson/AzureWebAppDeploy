@@ -7,6 +7,8 @@
     RedistPath                      = "https://github.com/djpericsson/AzureWebAppDeploy/raw/master"
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
+
+    LogFile                         = "App-RegistrationDeployment.log"
                                     
     WebApplication                  = "package.zip"
 
