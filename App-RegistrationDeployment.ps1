@@ -330,15 +330,6 @@ Else {
     Write-Output ""
 }
 
-<#
-If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue) -and `
-   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)))
-{
-    Write-Warning "A unique AzureRm DNS name could not be automatically determined."
-    return
-}
-#>
-
 #Verify AzureRmRoleAssignment to logged on user
 If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
     Write-Output "--------------------------------------------------------------------------------"
@@ -399,6 +390,10 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName 
     Write-Output $AzureRmResourceGroup
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 
+}
+Else
+{
+    Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 #endregion
 
@@ -611,6 +606,10 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
 
     Write-Output $AzureRmADServicePrincipal
 }
+Else
+{
+    Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
+}
 #endregion
 
 #region Create AzureRmRoleAssignment
@@ -639,6 +638,10 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
     }
 
     Write-Output $AzureRmRoleAssignment
+}
+Else
+{
+    Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 }
 #endregion
 
@@ -683,9 +686,9 @@ If ($Security_Admins)
     $TemplateParameters.Add("Security_Admins",$Security_Admins)
 }
 
-New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
-
 Try { Invoke-Logger -Message $TemplateParameters -Severity I -Category "AzureRmResourceGroupDeployment" } Catch {}
+
+New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
 
 $x = 0
 While ($X -lt 3)

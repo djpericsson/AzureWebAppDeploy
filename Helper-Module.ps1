@@ -300,7 +300,12 @@ Function Invoke-Logger
         {
             If (($Message.GetType()).Name -eq "Hashtable")
             {
-                Get-RecursiveProperties -Value $Message
+                ForEach ($prop in $Message.Keys)
+                {
+                    If ($prop.Value) {
+                        Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): $($Message.$prop)]"
+                    }
+                }
             }
             ElseIf (($Message.GetType()).Name -eq "String")
             {
