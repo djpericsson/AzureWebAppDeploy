@@ -90,13 +90,11 @@ If ($StatusCodeConfiguration -ne 200) {
 
 Try { Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
-Try { Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "StatusCode $StatusCodeHelper" -Severity I -Category "Helper-Module" } Catch {}
 
 Try { Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified." -Severity I -Category "Configuration" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
-Try { Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Configuration" } Catch {}
-
-break
+Try { Invoke-Logger -Message "StatusCode $StatusCodeConfiguration" -Severity I -Category "Configuration" } Catch {}
 
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
@@ -737,6 +735,11 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 #endregion
 
 $Measure.Stop()
+
+Write-Output ""
+Write-Output ""
+Write-Output "Log file location:"
+Write-Host $LogFile -ForegroundColor Blue
 
 Write-Output ""
 Write-Output ""
