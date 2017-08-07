@@ -329,7 +329,7 @@ Function Invoke-Logger
         {
             If (($Message.GetType()).Name -eq "Hashtable")
             {
-                Get-RecursiveHashTable -Object $Message
+                Get-RecursiveHashTable -Object $Message -Category $Category
             }
             ElseIf (($Message.GetType()).Name -eq "String")
             {
