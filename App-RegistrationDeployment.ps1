@@ -88,8 +88,6 @@ If ($StatusCodeConfiguration -ne 200) {
 
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
-Write-Host $LogFile
-
 Try { Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Helper-Module" } Catch {}
