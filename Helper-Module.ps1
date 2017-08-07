@@ -303,7 +303,13 @@ Function Invoke-Logger
                 ForEach ($prop in $Message.Keys)
                 {
                     If ($prop) {
-                        Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): $($Message.$prop)]"
+
+                        If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection")) {
+                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): *****]"
+                        }
+                        Else {
+                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): $($Message.$prop)]"
+                        }
                     }
                 }
             }
