@@ -653,6 +653,18 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Deploying Azure Resource Manager Template"
 Write-Output "--------------------------------------------------------------------------------"
 
+[bool]$ParamValidation = $True
+If (!$DeploymentName)                                                                                          { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json") -ne 200)                         { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)") -ne 200) { $Message = "Web application file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$AzureRmADApplication.ApplicationId)                                                                      { $Message = "Application ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$psadKeyValue)                                                                                            { $Message = "PSADCredential secret could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$AzureRmADApplication.ApplicationId)                                                                      { $Message = "AAD client ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$aad_TenantId)                                                                                            { $Message = "AAD tenant ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$Keys[0].Value)                                                                                           { $Message = "Storage SAS key could not be verified." ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+
+If (!$ParamValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
+
 $TemplateParameters = @{
     Name                          = $DeploymentName
     ResourceGroupName             = $DeploymentName
@@ -675,18 +687,6 @@ If ($Security_Admins)
 {
     $TemplateParameters.Add("Security_Admins",$Security_Admins)
 }
-
-[bool]$ParamValidation = $True
-If (!$DeploymentName)                                                                                          { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json") -ne 200)                         { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If ($(Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)") -ne 200) { $Message = "Web application file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$AzureRmADApplication.ApplicationId)                                                                      { $Message = "Application ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$psadKeyValue)                                                                                            { $Message = "PSADCredential secret could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$AzureRmADApplication.ApplicationId)                                                                      { $Message = "AAD client ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$aad_TenantId)                                                                                            { $Message = "AAD tenant ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$Keys[0].Value)                                                                                           { $Message = "Storage SAS key could not be verified." ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
-
-If (!$ParamValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
 Try { Invoke-Logger -Message $TemplateParameters -Severity I -Category "AzureRmResourceGroupDeployment" } Catch {}
 
