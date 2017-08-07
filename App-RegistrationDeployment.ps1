@@ -88,7 +88,7 @@ If ($StatusCodeConfiguration -ne 200) {
 
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
-Write-Output "LogFile: $LogFile"
+Write-Host "LogFile: $LogFile" -ForegroundColor Blue
 
 Try { Invoke-Logger -Message "Helper-Module location was successfully verified" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
@@ -100,7 +100,7 @@ Try { Invoke-Logger -Message "StatusCode $StatusCodeConfiguration" -Severity I -
 
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
-Write-Output "$PSScriptRoot\ConfigurationData.psd1"
+Write-Output "ConfigurationData: $PSScriptRoot\ConfigurationData.psd1"
 Write-Output ""
 
 #region Checking PowerShell version and modules
