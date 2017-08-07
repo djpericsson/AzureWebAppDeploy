@@ -90,13 +90,13 @@ $LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
 Write-Host $LogFile
 
-Invoke-Logger -Message "Helper-Module location could not be verified." -Severity W -Category "Helper-Module"
-Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity W -Category "Helper-Module"
-Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity W -Category "Helper-Module"
+Invoke-Logger -Message "Helper-Module location was successfully verified." -Severity I -Category "Helper-Module"
+Invoke-Logger -Message "Url: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module"
+Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Helper-Module"
 
-Invoke-Logger -Message "ConfigurationData.psd1 location could not be verified." -Severity W -Category "Configuration"
-Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity W -Category "Configuration"
-Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity W -Category "Configuration"
+Invoke-Logger -Message "ConfigurationData.psd1 location was successfully verified." -Severity I -Category "Configuration"
+Invoke-Logger -Message "Url: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration"
+Invoke-Logger -Message "StatusCode $UrlStatusCode" -Severity I -Category "Configuration"
 
 break
 
