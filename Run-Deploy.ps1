@@ -1,6 +1,6 @@
 ﻿$Location                  = "northeurope"
 $Security_Admins           = "ADMPEER"
-$DynamicsAXApiId           = "axtestdynamics365aos-adl2.cloudax.dynamics.com"
+$DynamicsAXApiId           = "axtestdynamics365aos-addlevel.cloudax.dynamics.com"
 $RepoURL                   = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master"
 
 $Webclient                       = New-Object System.Net.Webclient

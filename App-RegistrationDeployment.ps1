@@ -98,6 +98,8 @@ Try { Invoke-Logger -Message "RepoURL: $RepoURL" -Severity I -Category "Paramete
 Try { Invoke-Logger -Message "Helper-Module: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
 Try { Invoke-Logger -Message "ConfigurationData.psd1: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
 
+Try { Invoke-Logger -Message $ConfigurationData -Severity I -Category "Configuration" } Catch {}
+
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
 Write-Output "ConfigurationData: $PSScriptRoot\ConfigurationData.psd1"
