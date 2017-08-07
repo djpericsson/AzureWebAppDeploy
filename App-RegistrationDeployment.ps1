@@ -711,7 +711,7 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
             $SDKHeader = $False
         }
 
-        Write-Output "Downloading: $($DllFile)"
+        Write-Output "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)"
         Try { Invoke-Logger -Message "Downloading: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
 
         Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)/$($DllFile)"
@@ -761,7 +761,7 @@ If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredRe
 
     Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Body $restPayload -Method PATCH -Verbose
 
-    Try { Invoke-Logger -Message $restPayload -Severity I -Category "Graph" } Catch {}
+    Try { Invoke-Logger -Message "PATCH" -Severity I -Category "Graph" } Catch {}
 }
 Else
 {
@@ -790,7 +790,7 @@ Else
 
                 Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Body $restPayload -Method PATCH -Verbose
 
-                Try { Invoke-Logger -Message $restPayload -Severity I -Category "Graph" } Catch {}
+                Try { Invoke-Logger -Message "PATCH" -Severity I -Category "Graph" } Catch {}
             }
         }
     }
@@ -803,18 +803,13 @@ Write-Output "------------------------------------------------------------------
 
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 {
-    Write-Output "Removing: $($DllFile)"
+    Write-Output "Removing: $($ConfigurationData.LocalPath)\$($DllFile)"
     Try { Invoke-Logger -Message "Removing: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
     Remove-Item -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
 }
 #endregion
 
 $Measure.Stop()
-
-Write-Output ""
-Write-Output ""
-Write-Output "Log file location:"
-Write-Host $LogFile -ForegroundColor Green
 
 Write-Output ""
 Write-Output ""
