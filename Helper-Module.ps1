@@ -302,7 +302,7 @@ Function Invoke-Logger
             {
                 ForEach ($prop in $Message.Keys)
                 {
-                    If ($prop.Value) {
+                    If ($prop) {
                         Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop): $($Message.$prop)]"
                     }
                 }
