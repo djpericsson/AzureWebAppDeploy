@@ -492,9 +492,14 @@ If ($StorageContext) {
 
         Try {
             Set-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext -CorsRules $ConfigurationData.CorsRules -ErrorAction Stop
-            Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+            $GetAzureStorageCORSRule = Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
+
+            Write-Host $GetAzureStorageCORSRule
+            Try { Invoke-Logger -Message $GetAzureStorageCORSRule -Severity I -Category "AzureStorageCORSRule" } Catch {}
+
         } Catch {
             Write-Error $_
+            Try { Invoke-Logger -Message $_ -Severity E -Category "AzureStorageCORSRule" } Catch {}
         }
     }
 }
@@ -520,6 +525,7 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
 
     Write-Output $psadCredential
+    Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
     Write-Output ""
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -538,8 +544,10 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Try {
         $AzureRmADApplication = New-AzureRmADApplication @AzureRmADApplicationParams -ErrorAction Stop
         Write-Output $AzureRmADApplication
+        Try { Invoke-Logger -Message $AzureRmADApplication -Severity I -Category "AzureRmADApplication" } Catch {}
     } Catch {
         Write-Error $_
+        Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }   
 }
 Else
@@ -555,10 +563,13 @@ Else
         $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
 
         Write-Output $psadKeyValue
+        Try { Invoke-Logger -Message $psadKeyValue -Severity I -Category "PSADCredential" } Catch {}
     }
     Else
     {
         Write-Warning "A PSADCredential could not be found, aborting"
+        Try { Invoke-Logger -Message "A PSADCredential could not be found, aborting" -Severity E -Category "PSADCredential" } Catch {}
+        Try { Invoke-Logger -Message "Path: $($ConfigurationData.PSADCredential.ClixmlPath)" -Severity E -Category "PSADCredential" } Catch {}
         return
     }
 }
@@ -574,8 +585,10 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
 
     Try {
         $AzureRmADServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $AzureRmADApplication.ApplicationId -ErrorAction Stop
+        Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
     } Catch {
         Write-Error $_
+        Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADServicePrincipal" } Catch {}
     } 
 
     $x = 0
@@ -613,6 +626,7 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
         Try
         {
             $AzureRmRoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction Stop
+            Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
         }
         Catch
         {
@@ -669,6 +683,8 @@ If ($Security_Admins)
 
 New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
 
+Try { Invoke-Logger -Message $TemplateParameters -Severity I -Category "AzureRmResourceGroupDeployment" } Catch {}
+
 $x = 0
 While ($X -lt 3)
 {
@@ -694,6 +710,7 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
         }
 
         Write-Output "Downloading: $($DllFile)"
+        Try { Invoke-Logger -Message "Downloading: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
 
         Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)/$($DllFile)"
     }
@@ -722,6 +739,7 @@ $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 $token = Get-AuthorizationToken -TenantName $tenantName
 
 Write-Output "ExpiresOn: $($token.ExpiresOn.LocalDateTime)"
+Try { Invoke-Logger -Message "ExpiresOn: $($token.ExpiresOn.LocalDateTime)" -Severity I -Category "Token" } Catch {}
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
@@ -740,6 +758,8 @@ If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredRe
     Write-Output "--------------------------------------------------------------------------------"
 
     Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Body $restPayload -Method PATCH -Verbose
+
+    Try { Invoke-Logger -Message $restPayload -Severity I -Category "Graph" } Catch {}
 }
 Else
 {
@@ -767,6 +787,8 @@ Else
                 Write-Output "--------------------------------------------------------------------------------"
 
                 Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Body $restPayload -Method PATCH -Verbose
+
+                Try { Invoke-Logger -Message $restPayload -Severity I -Category "Graph" } Catch {}
             }
         }
     }
@@ -780,6 +802,7 @@ Write-Output "------------------------------------------------------------------
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
 {
     Write-Output "Removing: $($DllFile)"
+    Try { Invoke-Logger -Message "Removing: $($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
     Remove-Item -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -Force -ErrorAction SilentlyContinue
 }
 #endregion
@@ -795,7 +818,9 @@ Write-Output ""
 Write-Output ""
 Write-Output "Browse to the following URL to initialize the application:"
 Write-Host "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -ForegroundColor Green
+Try { Invoke-Logger -Message "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -Severity I -Category "WebApp" } Catch {}
 
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Completed in $(($Measure.Elapsed).TotalSeconds) seconds"
+Try { Invoke-Logger -Message "Completed in $(($Measure.Elapsed).TotalSeconds) seconds" -Severity I -Category "Summary" } Catch {}
