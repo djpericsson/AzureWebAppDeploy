@@ -278,6 +278,32 @@ Function Get-RecursiveHashTable {
     }
 }
 
+Function Get-RecursivePSObject {
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        $Object,
+
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullorEmpty()]
+        [String]$Category
+    )
+    $date = [datetime]::UtcNow
+    ForEach ($prop in $Message.PSObject.Properties)
+    {
+        If ($prop.Value) {
+            If ($prop.Value -is [PSObject])
+            {
+                Get-RecursivePSObject -Object ($prop.Value) -Category $Category
+            }
+            Else
+            {
+                Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
+            }
+        }
+    }
+}
+
 Function Invoke-Logger
 {
     param(
@@ -331,17 +357,10 @@ Function Invoke-Logger
             {
                 Get-RecursiveHashTable -Object $Message -Category $Category
             }
-            ElseIf (($Message.GetType()).Name -eq "String")
+            ElseIf ($Message -is [PSObject])
             {
-                ForEach ($Line in $Message)
-                {
-                    If (-not($Line -eq "")) {
-                        Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
-                    }
-                }
-            }
-            Else
-            {
+                Get-RecursivePSObject -Object $Message -Category $Category
+                <#
                 ForEach ($prop in $Message.PSObject.Properties)
                 {
                     If ($prop.Value) {
@@ -351,6 +370,16 @@ Function Invoke-Logger
                         Else {
                             Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
                         }
+                    }
+                }
+                #>
+            }
+            Else
+            {
+                ForEach ($Line in $Message)
+                {
+                    If (-not($Line -eq "")) {
+                        Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
                     }
                 }
             }
