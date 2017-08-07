@@ -153,8 +153,6 @@ If ($ExFlowUserSecret) {
 If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
 If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue))    { Import-Module AzureRM.Profile }
 
-break
-
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Logging in to azure automation"
