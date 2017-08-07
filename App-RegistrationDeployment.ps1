@@ -161,7 +161,7 @@ Write-Output "Logging in to azure automation"
 Write-Output "--------------------------------------------------------------------------------"
 
 #Determine logon status
-$AzureRmLogon.GetType() = Get-AzureRmContext -ErrorAction Stop
+$AzureRmLogon = Get-AzureRmContext -ErrorAction Stop
 
 If (!$AzureRmLogon.Account) {
 
