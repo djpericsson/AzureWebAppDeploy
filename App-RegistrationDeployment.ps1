@@ -167,25 +167,31 @@ If (!$AzureRmLogon.Account) {
     If ($WebAppSubscriptionGuid) {
         Write-Host "Subscription co-admin account"
         $AzureRmLogon = Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid
+        Try { Invoke-Logger -Message "Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid" -Severity I -Category "Logon" } Catch {}
     }
     Else {
         $AzureRmLogon = Set-AzureRmLogon
+        Try { Invoke-Logger -Message "Set-AzureRmLogon" -Severity I -Category "Logon" } Catch {}
     }
 
     #If logon failed abort script
-    If (!$AzureRmLogon) { return }
+    If (!$AzureRmLogon) { Try { Invoke-Logger -Message "Logon to Azure failed." -Severity E -Category "Logon" } Catch {} ; return }
 
     #Determine Azure subscription
     If (-not($AzureRmLogon.Context.Subscription)){
         Write-Warning "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal."
+        Try { Invoke-Logger -Message "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal." -Severity E -Category "Subscription" } Catch {}
         return
     }
     Else {
         #Get all subscriptions
         $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Context.Tenant.Id | Select-Object Name,Id
 
+        Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Context.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
+
         #Multiple subscriptions detected
         If ($SubscriptionIds.Id.count -gt 1) {
+
             $mChoices = @()
             $choice = $null
             [int]$i = 0
@@ -203,16 +209,22 @@ If (!$AzureRmLogon.Account) {
         
             #Select the chosen AzureRmSubscription
             Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Context.Tenant.Id
+
+            Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $($SubscriptionIds[$answer].Id) -TenantId $($AzureRmLogon.Context.Tenant.Id)" -Severity I -Category "Subscription" } Catch {}
         }
     }
 
     #Set AzureRM context
     Set-AzureRmContext -Context $AzureRmLogon.Context
 
+    Try { Invoke-Logger -Message "Set-AzureRmContext -Context $($AzureRmLogon.Context)" -Severity I -Category "Context" } Catch {}
+
 }
 Else {
     #Get all subscriptions
     $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Tenant.Id | Select-Object Name,Id
+
+    Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
     #Multiple subscriptions detected
     If ($SubscriptionIds.Id.count -gt 1) {
@@ -233,10 +245,13 @@ Else {
         
         #Select the chosen AzureRmSubscription
         Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Tenant.Id
+
+        Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $($SubscriptionIds[$answer].Id) -TenantId $($AzureRmLogon.Context.Tenant.Id)" -Severity I -Category "Subscription" } Catch {}
     }
     Else {
         #List currently logged on session
         $AzureRmLogon
+        Try { Invoke-Logger -Message $AzureRmLogon -Severity I -Category "Logon" } Catch {}
     }
 }
 
