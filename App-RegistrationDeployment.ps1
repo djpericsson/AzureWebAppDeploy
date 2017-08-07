@@ -657,10 +657,10 @@ Write-Output "------------------------------------------------------------------
 If (!$DeploymentName)                               { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
 $StatusCodeWebSite = Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json" 
-If ($StatusCodeWebSite -ne 200)                     { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/WebSite.json : $($StatusCodeWebSite)" -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If ($StatusCodeWebSite -ne 200)                     { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/WebSite.json : $StatusCodeWebSite" -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
 $StatusCodeWebApplication = Get-UrlStatusCode -Url  "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)"
-If ($StatusCodeWebApplication -ne 200)              { $Message = "Web application file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication) : $($StatusCodeWebApplication)" -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If ($StatusCodeWebApplication -ne 200)              { $Message = "Web application file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication) : $StatusCodeWebApplication" -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
 If (!$AzureRmADApplication.ApplicationId)           { $Message = "Application ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
 If (!$psadKeyValue)                                 { $Message = "PSADCredential secret could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity E -Category "AzureRmResourceGroupDeployment" } Catch {}}
