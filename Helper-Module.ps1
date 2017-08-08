@@ -333,11 +333,6 @@ Function Invoke-Logger
     }
 
     $date = [datetime]::UtcNow
-    
-    <#
-    For ($x=$Severity.Length; $x -le 6; $x++)  { $Severity = $Severity+" " }
-    For ($x=$Category.Length; $x -le 7; $x++) { $Category = $Category+" " }
-    #>
 
     If ($Error)
     {
