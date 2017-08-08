@@ -267,7 +267,7 @@ Function Get-RecursiveHashTable {
                 Get-RecursiveHashTable -Object ($Object.$prop) -Category $Category
             }
             Else {
-                If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection")) {
+                If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection") -or ($prop -eq "ConnectionString")) {
                     Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [INFO] [$($Category)] [$($prop): *****]"
                 }
                 Else {
@@ -298,7 +298,12 @@ Function Get-RecursivePSObject {
             }
             Else
             {
-                Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
+                If (($prop.Name -eq "aad_ClientSecret") -or ($prop.Name -eq "StorageConnection") -or ($prop.Name -eq "KeyValueStorageConnection") -or ($prop.Name -eq "ConnectionString")) {
+                    Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
+                }
+                Else {
+                    Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
+                }
             }
         }
     }
@@ -360,25 +365,12 @@ Function Invoke-Logger
             ElseIf ($Message -is [PSObject])
             {
                 Get-RecursivePSObject -Object $Message -Category $Category
-                <#
-                ForEach ($prop in $Message.PSObject.Properties)
-                {
-                    If ($prop.Value) {
-                        If (($prop.Name -eq "Password") -or ($prop.Name -eq "AccessToken") -or ($prop.Name -eq "IdToken") -or ($prop.Name -eq "RefreshToken") -or ($prop.Name -eq "ConnectionString")) {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
-                        }
-                        Else {
-                            Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): $($prop.Value)]"
-                        }
-                    }
-                }
-                #>
             }
             Else
             {
                 ForEach ($Line in $Message)
                 {
-                    If (-not($Line -eq "")) {
+                    If ($Line) {
                         Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($Line)]"
                     }
                 }
