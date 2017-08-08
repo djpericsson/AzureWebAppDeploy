@@ -497,6 +497,8 @@ If ($StorageContext) {
             $GetAzureStorageCORSRule = Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
 
             Write-Host $GetAzureStorageCORSRule
+            Write-Output ""
+
             Try { Invoke-Logger -Message $GetAzureStorageCORSRule -Severity I -Category "AzureStorageCORSRule" } Catch {}
 
         } Catch {
