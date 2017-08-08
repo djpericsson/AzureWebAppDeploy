@@ -267,7 +267,7 @@ Function Get-RecursiveHashTable {
                 Get-RecursiveHashTable -Object ($Object.$prop) -Category $Category
             }
             Else {
-                If (($prop -eq "aad_ClientSecret") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection") -or ($prop -eq "ConnectionString")) {
+                If (($prop -eq "aad_ClientSecret") -or ($prop -eq "Password") -or ($prop -eq "StorageConnection") -or ($prop -eq "KeyValueStorageConnection") -or ($prop -eq "ConnectionString")) {
                     Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [INFO] [$($Category)] [$($prop): *****]"
                 }
                 Else {
@@ -298,7 +298,7 @@ Function Get-RecursivePSObject {
             }
             Else
             {
-                If (($prop.Name -eq "aad_ClientSecret") -or ($prop.Name -eq "StorageConnection") -or ($prop.Name -eq "KeyValueStorageConnection") -or ($prop.Name -eq "ConnectionString")) {
+                If (($prop.Name -eq "aad_ClientSecret") -or ($prop.Name -eq "Password") -or ($prop.Name -eq "StorageConnection") -or ($prop.Name -eq "KeyValueStorageConnection") -or ($prop.Name -eq "ConnectionString")) {
                     Write-Log -Message "[$(Get-Date $date -UFormat '%Y-%m-%dT%T%Z')] [$($Severity)] [$($Category)] [$($prop.Name): *****]"
                 }
                 Else {
