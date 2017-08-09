@@ -136,7 +136,7 @@ If ($hasErrors) {
 }
 #endregion
 
-#get the zip-file
+#region Download the zip-file
 If ($ExFlowUserSecret) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Checking package"
@@ -298,7 +298,7 @@ $Tenant
 Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 #endregion
 
-#Call function to set deployment name for resources based on DynamicsAXApiId name
+#region Set deployment name for resources based on DynamicsAXApiId name
 
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
@@ -334,8 +334,9 @@ Else {
     Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     Write-Output ""
 }
+#endregion
 
-#Verify AzureRmRoleAssignment to logged on user
+#region Verify AzureRmRoleAssignment to logged on user
 If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Validating AzureRmRoleAssignment"
@@ -362,6 +363,7 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
         return
     }
 }
+#endregion
 
 #region Create AzureRmResourceGroup
 If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue))
