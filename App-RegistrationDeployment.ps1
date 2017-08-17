@@ -13,6 +13,9 @@ param(
     [string]$RepoURL,
 
     [Parameter(Mandatory=$False)]
+    [string]$TenantName,
+
+    [Parameter(Mandatory=$False)]
     [string]$ExFlowUserSecret,
 
     [Parameter(Mandatory=$False)]
@@ -23,9 +26,6 @@ param(
 
     [Parameter(Mandatory=$False)]
     [string]$TenantGuid,
-
-    [Parameter(Mandatory=$False)]
-    [string]$TenantName,
 
     [Parameter(Mandatory=$False)]
     [string]$WebAppSubscriptionGuid
