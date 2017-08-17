@@ -2,6 +2,7 @@
 $Security_Admins           = "ADMPEER"
 $DynamicsAXApiId           = "axtestdynamics365aos-addlevel.cloudax.dynamics.com"
 $RepoURL                   = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master"
+$TenantName                = "exflowcloud"
 
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true

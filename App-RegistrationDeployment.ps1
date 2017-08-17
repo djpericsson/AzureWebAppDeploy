@@ -52,6 +52,12 @@ Function Get-UrlStatusCode
 
 Clear-Host
 
+Write-Output $TenantName
+Write-Output ""
+
+Write-Output "Press any key to continue ..."
+$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+
 #We client download options
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
