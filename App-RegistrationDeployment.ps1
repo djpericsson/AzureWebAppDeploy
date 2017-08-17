@@ -285,8 +285,15 @@ If ($TenantGuid){
 }
 
 $aad_TenantId = $Tenant.Id
-If (!$TenantName) { $tenantName = $Tenant.Directory }
-Else { $Tenant.Directory =  $tenantName }
+
+If (!$TenantName) {
+    $tenantName = $Tenant.Directory
+}
+Else {
+    If ($Tenant.Directory -ne $tenantName) {
+        $Tenant.Directory = $tenantName
+    }
+}
 
 If (!$aad_TenantId){
     Write-Warning "A tenant id could not be found."
