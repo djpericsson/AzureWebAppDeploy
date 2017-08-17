@@ -281,9 +281,9 @@ If ($TenantGuid){
     $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
 }
 
-$aad_TenantId = $Tenant.Id
-
 $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
+
+$aad_TenantId = $Tenant.Id
 
 If ($RoleAssignment.SignInName -like "*#EXT#*") {
     $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@","")).Replace(".onmicrosoft.com","")
