@@ -299,7 +299,6 @@ Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 #endregion
 
 #region Set deployment name for resources based on DynamicsAXApiId name
-
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
