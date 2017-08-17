@@ -52,11 +52,6 @@ Function Get-UrlStatusCode
 
 Clear-Host
 
-Write-Output $TenantName
-Write-Output ""
-
-Read-Host -Prompt "Press Enter to continue"
-
 #We client download options
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true

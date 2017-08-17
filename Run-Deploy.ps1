@@ -11,4 +11,4 @@ $Webclient.Encoding              = [System.Text.Encoding]::UTF8
 $Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 $scriptPath = ($Webclient.DownloadString("$RepoURL/App-RegistrationDeployment.ps1"))
-Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$RepoURL
+Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$RepoURL,$TenantName
