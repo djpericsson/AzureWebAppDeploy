@@ -285,7 +285,7 @@ $aad_TenantId = $Tenant.Id
 
 $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
 
-If ($RoleAssignment -contains "#EXT#") {
+If ($RoleAssignment.SignInName -like "*#EXT#*") {
     $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@","")).Replace(".onmicrosoft.com","")
     If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
 }
