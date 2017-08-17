@@ -262,21 +262,6 @@ Else {
     }
 }
 
-#Get tenant id information
-If ($TenantGuid){
-    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
-} Else {
-    $Tenant = Get-AzureRmTenant
-}
-
-$aad_TenantId = $Tenant.Id
-$tenantName = $Tenant.Directory
-
-If (!$aad_TenantId){
-    Write-Warning "A tenant id could not be found."
-    return
-}
-
 #Set tenant variables based on logged on session
 If ($AzureRmLogon.Account.Id) {
     $SignInName   = $AzureRmLogon.Account.Id
@@ -287,6 +272,21 @@ Else {
     $SignInName   = $AzureRmLogon.Context.Account.Id
     $Subscription = "/subscriptions/$($AzureRmLogon.Context.Subscription.Id)"
     $TenantId     = $AzureRmLogon.Context.Tenant.Id
+}
+
+#Get tenant id information
+If ($TenantGuid){
+    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
+} Else {
+    $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
+}
+
+$aad_TenantId = $Tenant.Id
+$tenantName = $Tenant.Directory
+
+If (!$aad_TenantId){
+    Write-Warning "A tenant id could not be found."
+    return
 }
 
 Write-Output "--------------------------------------------------------------------------------"
@@ -343,7 +343,7 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
     Write-Output "--------------------------------------------------------------------------------"
 
     #Get AzureRmRoleAssignment for currently logged on user
-    $AzureRmRoleAssignment = (Get-AzureRmRoleAssignment -SignInName $SignInName | Where-Object { $_.Scope -eq $Subscription } | Select-Object RoleDefinitionName).RoleDefinitionName
+    $AzureRmRoleAssignment = (Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") } | Select-Object RoleDefinitionName).RoleDefinitionName
 
     $AzureRmRoleAssignment
 
