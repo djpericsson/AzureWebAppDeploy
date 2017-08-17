@@ -25,6 +25,9 @@ param(
     [string]$TenantGuid,
 
     [Parameter(Mandatory=$False)]
+    [string]$TenantName,
+
+    [Parameter(Mandatory=$False)]
     [string]$WebAppSubscriptionGuid
 )
 
@@ -282,7 +285,7 @@ If ($TenantGuid){
 }
 
 $aad_TenantId = $Tenant.Id
-$tenantName = $Tenant.Directory
+If (!$TenantName) { $tenantName = $Tenant.Directory }
 
 If (!$aad_TenantId){
     Write-Warning "A tenant id could not be found."
