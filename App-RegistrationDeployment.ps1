@@ -13,9 +13,6 @@ param(
     [string]$RepoURL,
 
     [Parameter(Mandatory=$False)]
-    [string]$TenantName,
-
-    [Parameter(Mandatory=$False)]
     [string]$ExFlowUserSecret,
 
     [Parameter(Mandatory=$False)]
@@ -286,14 +283,9 @@ If ($TenantGuid){
 
 $aad_TenantId = $Tenant.Id
 
-If (!$TenantName) {
-    $tenantName = $Tenant.Directory
-}
-Else {
-    If ($Tenant.Directory -ne $tenantName) {
-        $Tenant.Directory = $tenantName
-    }
-}
+$TenantName = (((Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") } | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@","")).Replace(".onmicrosoft.com","")
+
+If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
 
 If (!$aad_TenantId){
     Write-Warning "A tenant id could not be found."
@@ -765,7 +757,7 @@ $restPayload.Add("requiredResourceAccess",@($ConfigurationData.RequiredResourceA
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
-$token = Get-AuthorizationToken -TenantName $tenantName
+$token = Get-AuthorizationToken -TenantName $TenantName
 
 Write-Output "ExpiresOn: $($token.ExpiresOn.LocalDateTime)"
 Try { Invoke-Logger -Message $token -Severity I -Category "Token" } Catch {}
@@ -775,7 +767,7 @@ $authorizationHeader = @{
     "Authorization" = $token.AccessToken
 }
 
-$restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($tenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
+$restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($TenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
 
 $restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select -ExpandProperty requiredResourceAccess
 
