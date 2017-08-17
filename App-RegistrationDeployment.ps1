@@ -349,7 +349,7 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
     Write-Output "--------------------------------------------------------------------------------"
 
     #Get AzureRmRoleAssignment for currently logged on user
-    $AzureRmRoleAssignment = (Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") } | Select-Object RoleDefinitionName).RoleDefinitionName
+    $AzureRmRoleAssignment = ($RoleAssignment).RoleDefinitionName
 
     $AzureRmRoleAssignment
 
