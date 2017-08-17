@@ -281,14 +281,15 @@ If ($TenantGuid){
     $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
 }
 
+#Get tenant name if external user
 $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
-
-$aad_TenantId = $Tenant.Id
 
 If ($RoleAssignment.SignInName -like "*#EXT#*") {
     $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@","")).Replace(".onmicrosoft.com","")
     If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
 }
+
+$aad_TenantId = $Tenant.Id
 
 If (!$aad_TenantId){
     Write-Warning "A tenant id could not be found."
