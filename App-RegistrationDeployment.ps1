@@ -525,7 +525,16 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
+
+    $psadCredential = $null
+    If ("$($azureRmModuleVersion.Version.Major).$($azureRmModuleVersion.Version.Minor).$($azureRmModuleVersion.Version.Build)" -le "4.2.0") {
+        $psadCredential = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+    }
+    Else {
+        $psadCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADKeyCredential
+    }
+
     $startDate                = Get-Date
     $psadCredential.StartDate = $startDate
     $psadCredential.EndDate   = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
