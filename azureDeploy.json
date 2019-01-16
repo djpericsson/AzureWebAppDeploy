@@ -2,44 +2,22 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VirtualMachineName": {
+        "CustomerName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Virtual Machine."
             }
-        },
-        "TimeZone": {
-            "type": "string",
-            "metadata": {
-                "description": "The time zone for automatic shutdown."
-            }
-        },
-        "Time": {
-            "type": "string",
-            "metadata": {
-                "description": "The time for automatic shutdown."
-            }
         }
     },
+    "variables": {
+        "UniqueString": "[substring(uniqueString(subscription().id), 0, 8)]"
+    },
     "resources": [
-        {
-            "apiVersion": "[providers('Microsoft.DevTestLab','labs').apiVersions[0]]",
-            "type": "microsoft.devtestlab/schedules",
-            "name": "[concat('shutdown-computevm-',tolower(parameters('VirtualMachineName')))]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "status": "Enabled",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "[parameters('Time')]"
-                },
-                "timeZoneId": "[parameters('TimeZone')]",
-                "notificationSettings": {
-                    "status": "Disabled",
-                    "timeInMinutes": 15
-                },
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines',concat(parameters('VirtualMachineName')))]"
-            }
+    ],
+    "outputs": {
+        "UniqueString": {
+            "type": "string",
+            "value": "[variables('UniqueString')]"
         }
-    ]
+    }
 }
