@@ -25,9 +25,9 @@
         {
             "name": "[variables('UniqueString')]",
             "type": "Microsoft.Automation/automationAccounts",
-            "apiVersion": "2015-01-01",
+            "apiVersion": "2018-06-30",
             "location": "[resourceGroup().location]",
-            "tags": "[parameters('tags')]",
+            "tags": [],
             "dependsOn": [],
             "properties": {
                 "sku": {
