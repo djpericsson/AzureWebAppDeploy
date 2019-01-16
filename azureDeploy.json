@@ -8,27 +8,20 @@
                 "description": "The name of the customer to deploy."
             },
             "minLength": 1
-        },
-        "DynamicsAxUri": {
-            "type": "string",
-            "metadata": {
-                "description": "The requested Dynamics AX URI."
-            },
-            "defaultValue": "concat('https://', {tenant-id},'.azurewebsites.net')",
-            "minLength": 1
         }
     },
     "variables": {
-        "UniqueString": "[uniqueString(subscription().id, deployment().name)]",
+        "uniqueString": "[uniqueString(subscription().id, deployment().name)]",
         "sku": "Free",
         "tags": {
             "Customer": "[parameters('CustomerName')]",
-            "Solution": "[variables('UniqueString')]"
+            "Solution": "[variables('uniqueString')]"
         },
         "containerName": "artifacts",
+        "dynamicsAxUri": "concat('https://', tenant().id,'.azurewebsites.net')",
         "corsRules": [
             {
-                "allowedOrigins": ["[parameters('DynamicsAxUri')]"],
+                "allowedOrigins": ["[variables('dynamicsAxUri')]"],
                 "allowedMethods": ["GET"],
                 "maxAgeInSeconds": 200,
                 "exposedHeaders": ["x-ms-meta-*"],
@@ -38,7 +31,7 @@
     },
     "resources": [
         {
-            "name": "[variables('UniqueString')]",
+            "name": "[variables('uniqueString')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
             "location": "[resourcegroup().location]",
@@ -56,16 +49,16 @@
                     "name": "[concat('default/', variables('containerName'))]",
                     "type": "blobServices/containers",
                     "apiVersion": "2018-07-01",
-                    "dependsOn": ["[variables('UniqueString')]"]
+                    "dependsOn": ["[variables('uniqueString')]"]
                 }
             ]
         },
         {
-            "name": "[concat(variables('UniqueString'), '/default')]",
+            "name": "[concat(variables('uniqueString'), '/default')]",
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "condition": "[not(empty(variables('CorsRules')))]",
             "apiVersion": "2018-07-01",
-            "dependsOn": ["[variables('UniqueString')]"],
+            "dependsOn": ["[variables('uniqueString')]"],
             "properties": {
                 "cors": {
                     "corsRules": ["[variables('corsRules')]"]
@@ -73,7 +66,7 @@
             }
         },
         {
-            "name": "[variables('UniqueString')]",
+            "name": "[variables('uniqueString')]",
             "type": "Microsoft.Automation/automationAccounts",
             "apiVersion": "2015-10-31",
             "location": "[resourceGroup().location]",
