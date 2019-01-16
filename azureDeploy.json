@@ -19,7 +19,15 @@
             "defaultValue": 1,
             "minValue": 1,
             "metadata": {
-                "description": "Describes plan's instance count"
+                "description": "Describes plan's instance count."
+            }
+        },
+        "PackageUri": {
+            "type": "string",
+            "defaultValue": "https://github.com/djpericsson/AzureWebAppDeploy/raw/master/alis.zip",
+            "minLength": 1,
+            "metadata": {
+                "description": "The application package URI."
             }
         }
     },
@@ -129,7 +137,7 @@
                         "displayName": "[variables('uniqueString')]"
                     },
                     "properties": {
-                        "packageUri": "[concat('https://exflowpackagemanager.azurewebsites.net', '/', 'package.zip')]",
+                        "packageUri": ["parameters('PackageUri')"],
                         "dbType": "None",
                         "connectionString": "",
                         "setParameters": {
