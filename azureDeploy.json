@@ -8,6 +8,19 @@
                 "description": "The name of the customer to deploy."
             },
             "minLength": 1
+        },
+        "ServerFarmsSkuName": {
+            "type": "string",
+            "defaultValue": "F1",
+            "allowedValues": ["F1", "D1", "B1", "B2", "B3", "S1", "S2", "S3", "P1", "P2", "P3", "P4"]
+        },
+        "ServerFarmsSkuCapacity": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "metadata": {
+                "description": "Describes plan's instance count"
+            }
         }
     },
     "variables": {
@@ -76,6 +89,86 @@
                     "name": "[variables('sku')]"
                 }
             }
+        },
+        {
+            "apiVersion": "2017-08-01",
+            "name": "[variables('uniqueString')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "tags": "[variables('tags')]",
+            "sku": {
+                "name": "[parameters('ServerFarmsSkuName')]",
+                "capacity": "[parameters('ServerFarmsSkuCapacity')]"
+            },
+            "properties": {
+                "name": "[variables('uniqueString')]"
+            }
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[variables('uniqueString')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('uniqueString'))]": "Resource",
+                "displayName": "Website"
+            },
+            "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', variables('uniqueString'))]"],
+            "properties": {
+                "name": "[variables('uniqueString')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueString'))]"
+            },
+            "resources": [
+                {
+                    "name": "MSDeploy",
+                    "type": "extensions",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"],
+                    "tags": {
+                        "displayName": "[variables('uniqueString')]"
+                    },
+                    "properties": {
+                        "packageUri": "[concat('https://exflowpackagemanager.azurewebsites.net', '/', 'package.zip')]",
+                        "dbType": "None",
+                        "connectionString": "",
+                        "setParameters": {
+                            "IIS Web Application Name": "[variables('uniqueString')]"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
+                        "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
+                    ],
+                    "properties": {}
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "connectionstrings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
+                        "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
+                    ],
+                    "properties": {
+                        "StorageConnection": {
+                            "value": "Connection",
+                            "Name": "StorageConnection",
+                            "type": "Custom"
+                        },
+                        "KeyValueStorageConnection": {
+                            "value": "Connection",
+                            "Name": "KeyValueStorageConnection",
+                            "type": "Custom"
+                        }
+                    }
+                }
+            ]
         }
     ]
 }
