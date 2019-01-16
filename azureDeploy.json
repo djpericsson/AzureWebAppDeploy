@@ -61,7 +61,7 @@
             "dependsOn": ["[variables('uniqueString')]"],
             "properties": {
                 "cors": {
-                    "corsRules": ["[variables('corsRules')]"]
+                    "corsRules": ["[variables('CorsRules')]"]
                 }
             }
         },
