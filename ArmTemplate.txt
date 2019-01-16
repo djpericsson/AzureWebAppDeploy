@@ -1,0 +1,9 @@
+Skapa Resursgrupp
+Skapa Storage konto
+Skapa Container
+Skapa CORS regler
+Skapa Automations konto
+Skapa Azure AD App Registration (Går inte via ARM?)
+Skapa Web Site
+Konfigurera Application Settings
+Ladda upp package till Web App
