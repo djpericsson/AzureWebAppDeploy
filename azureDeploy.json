@@ -18,16 +18,7 @@
             "Solution": "[variables('uniqueString')]"
         },
         "containerName": "artifacts",
-        "dynamicsAxUri": "concat('https://', tenant().id,'.azurewebsites.net')",
-        "corsRules": [
-            {
-                "allowedOrigins": ["[variables('dynamicsAxUri')]"],
-                "allowedMethods": ["GET"],
-                "maxAgeInSeconds": 200,
-                "exposedHeaders": ["x-ms-meta-*"],
-                "allowedHeaders": ["x-ms-meta-abc", "x-ms-meta-data*", "x-ms-meta-target*"]
-            }
-        ]
+        "dynamicsAxUri": "concat('https://', tenant().id,'.azurewebsites.net')"
     },
     "resources": [
         {
@@ -56,12 +47,20 @@
         {
             "name": "[concat(variables('uniqueString'), '/default')]",
             "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "condition": "[not(empty(variables('CorsRules')))]",
+            "condition": "[not(empty(variables('dynamicsAxUri')))]",
             "apiVersion": "2018-07-01",
             "dependsOn": ["[variables('uniqueString')]"],
             "properties": {
                 "cors": {
-                    "corsRules": ["[variables('CorsRules')]"]
+                    "corsRules": [
+                        {
+                            "allowedOrigins": ["[variables('dynamicsAxUri')]"],
+                            "allowedMethods": ["GET"],
+                            "maxAgeInSeconds": 200,
+                            "exposedHeaders": ["x-ms-meta-*"],
+                            "allowedHeaders": ["x-ms-meta-abc", "x-ms-meta-data*", "x-ms-meta-target*"]
+                        }
+                    ]
                 }
             }
         },
