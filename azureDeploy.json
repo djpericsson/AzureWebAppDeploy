@@ -8,10 +8,17 @@
                 "description": "Name of the Virtual Machine."
             },
             "minLength": 1
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "Dept": "Finance",
+                "Environment": "Production"
+            }
         }
     },
     "variables": {
-        "UniqueString": "[substring(uniqueString(subscription().id), 0, 8)]",
+        "UniqueString": "[substring(uniqueString(subscription().id), 0, 16)]",
         "sku": "Free"
     },
     "resources": [
@@ -20,12 +27,13 @@
             "type": "Microsoft.Automation/automationAccounts",
             "apiVersion": "2015-01-01",
             "location": "[resourceGroup().location]",
-            "dependsOn": [ ],
+            "tags": "[parameters('tags')]",
+            "dependsOn": [],
             "properties": {
-              "sku": {
-                "name": "[variables('sku')]"
-              }
+                "sku": {
+                    "name": "[variables('sku')]"
+                }
             }
-          }
+        }
     ]
 }
