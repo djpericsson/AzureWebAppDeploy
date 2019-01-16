@@ -18,7 +18,7 @@
             "Solution": "[variables('uniqueString')]"
         },
         "containerName": "artifacts",
-        "dynamicsAxUri": "concat('https://', tenant().id,'.azurewebsites.net')"
+        "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]"
     },
     "resources": [
         {
