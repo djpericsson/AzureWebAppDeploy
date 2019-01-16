@@ -18,11 +18,12 @@
         {
             "name": "[variables('UniqueString')]",
             "type": "Microsoft.Automation/automationAccounts",
-            "apiVersion": "2018-06-30",
+            "apiVersion": "2015-10-31",
             "location": "[resourceGroup().location]",
             "tags": {
-                "Customer": "[parameters('CustomerName')]",
-            },
+                "Department": "[parameters('CustomerName')]",
+                "UniqueString": "[variables('UniqueString')]"
+              },
             "dependsOn": [],
             "properties": {
                 "sku": {
