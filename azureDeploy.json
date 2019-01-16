@@ -7,12 +7,33 @@
             "metadata": {
                 "description": "Name of the Virtual Machine."
             }
+        },
+        "AzureAutomationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Azure Automation account to deploy."
+            },
+            "minLength": 1
         }
     },
     "variables": {
-        "UniqueString": "[substring(uniqueString(subscription().id), 0, 8)]"
+        "UniqueString": "[substring(uniqueString(subscription().id), 0, 8)]",
+        "sku": "Free"
     },
     "resources": [
+        {
+            "name": "[parameters('AzureAutomationAccountName')]",
+            "type": "Microsoft.Automation/automationAccounts",
+            "apiVersion": "2015-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": "",
+            "dependsOn": [ ],
+            "properties": {
+              "sku": {
+                "name": "[variables('sku')]"
+              }
+            }
+          }
     ],
     "outputs": {
         "UniqueString": {
