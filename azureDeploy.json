@@ -1,75 +1,44 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "CustomerName": {
+        "VirtualMachineName": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 24,
-            "defaultValue": "",
             "metadata": {
-                "description": "The customer name. Only A to Z characters and numbers are valid."
+                "description": "Name of the Virtual Machine."
             }
         },
-        "SaasResourceGroup": {
+        "TimeZone": {
             "type": "string",
-            "defaultValue": "SignUp-SAAS-Services",
             "metadata": {
-                "description": "The Saas Service Resource Group name."
-            },
-            "allowedValues": [
-                "SignUp-SAAS-Services"
-            ]
+                "description": "The time zone for automatic shutdown."
+            }
         },
-        "AppServicePlan": {
+        "Time": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 24,
-            "defaultValue": "signupxfwprodrgtfuf"
+            "metadata": {
+                "description": "The time for automatic shutdown."
+            }
         }
-    },
-    "variables": {
-        "StorageAccountType": "Standard_LRS",
-        "CustomerName": "[substring(concat(replace(trim(parameters('CustomerName')),' ', ''), uniqueString(parameters('CustomerName'))), 0, 19)]",
-        "ResourceGroup": "[resourceGroup().name]"
     },
     "resources": [
         {
-            "apiVersion": "2017-05-10",
-            "name": "nestedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('ResourceGroup')]",
+            "apiVersion": "[providers('Microsoft.DevTestLab','labs').apiVersions[0]]",
+            "type": "microsoft.devtestlab/schedules",
+            "name": "[concat('shutdown-computevm-',tolower(parameters('VirtualMachineName')))]",
+            "location": "[resourceGroup().location]",
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri":
-                        "https://raw.githubusercontent.com/djpericsson/SaasCustomerDeploy/master/customerDeploy.json",
-                    "contentVersion": "1.0.0.0"
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "[parameters('Time')]"
                 },
-                "parameters": {
-                    "CustomerName": { "value": "[variables('CustomerName')]" },
-                    "StorageAccountType": { "value": "[variables('StorageAccountType')]" },
-                    "Tag": { "value": "[trim(parameters('CustomerName'))]" },
-                    "AppServicePlan": { "value": "[parameters('AppServicePlan')]" }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "nestedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[parameters('SaaSResourceGroup')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/djpericsson/SaasCustomerDeploy/master/dnsRecordSet.json",
-                    "contentVersion": "1.0.0.0"
+                "timeZoneId": "[parameters('TimeZone')]",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "timeInMinutes": 15
                 },
-                "parameters": {
-                    "CustomerName": { "value": "[replace(trim(parameters('CustomerName')),' ', '')]" },
-                    "CNAME": { "value": "[variables('CustomerName')]" },
-                    "DNSZoneName": { "value": "dev.addlevel.net" }
-                }
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines',concat(parameters('VirtualMachineName')))]"
             }
         }
     ]
