@@ -117,10 +117,7 @@
             "name": "[variables('uniqueString')]",
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('uniqueString'))]": "Resource",
-                "displayName": "Website"
-            },
+            "tags": "[variables('tags')]",
             "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', variables('uniqueString'))]"],
             "properties": {
                 "name": "[variables('uniqueString')]",
@@ -133,9 +130,7 @@
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2015-08-01",
                     "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"],
-                    "tags": {
-                        "displayName": "[variables('uniqueString')]"
-                    },
+                    "tags": "[variables('tags')]",
                     "properties": {
                         "packageUri": "[parameters('PackageUri')]",
                         "dbType": "None",
