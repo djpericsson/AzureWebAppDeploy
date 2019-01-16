@@ -18,7 +18,7 @@
         }
     },
     "variables": {
-        "UniqueString": "[uniqueString(uniqueString(subscription().id, deployment().name))]",
+        "UniqueString": "[uniqueString(subscription().id, deployment().name)]",
         "sku": "Free"
     },
     "resources": [
