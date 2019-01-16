@@ -136,7 +136,7 @@
                         "dbType": "None",
                         "connectionString": "",
                         "setParameters": {
-                            "IIS Web Application Name": "[variables('uniqueString')]"
+                            "IIS Web Application Name": "[concat(variables('uniqueString'), uniqueString(resourcegroup().id))]"
                         }
                     }
                 },
