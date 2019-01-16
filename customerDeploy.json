@@ -1,0 +1,85 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "CustomerName": {
+            "type": "string"
+        },
+        "StorageAccountType": {
+            "type": "string"
+        },
+        "Tag": {
+            "type": "string"
+        },
+        "AppServicePlan": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "ReplaceName": "[replace(parameters('CustomerName'),' ', '')]",
+        "CustomerName": "[replace(variables('ReplaceName'),'-', '')]",
+        "Rg": "[resourceGroup().name]",
+        "rRgSpace": "[replace(variables('Rg'),' ', '')]",
+        "rRgDash": "[replace(variables('rRgSpace'),'-', '')]"
+    },
+    "resources": [
+        {
+            "name": "[tolower(parameters('CustomerName'))]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2016-01-01",
+            "sku": {
+                "name": "[parameters('StorageAccountType')]"
+            },
+            "dependsOn": [],
+            "tags": {
+                "displayName": "StorageAccount",
+                "Customer": "[parameters('Tag')]",
+                "Solution": "Exflow Cloud"
+            },
+            "properties": {
+                "cors": {
+                    "allowedOrigins": ["http://signup.exflow.debug','https://signup.exflow.cloud"]
+                }
+            },
+            "kind": "Storage"
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[parameters('AppServicePlan')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]"
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[tolower(parameters('CustomerName'))]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "dependsOn": ["[parameters('AppServicePlan')]"],
+            "properties": {
+                "serverFarmId": "[parameters('AppServicePlan')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "ApplicationInsightsInstrumentationKey",
+                            "value": "1234"
+                        },
+                        {
+                            "name": "Startup.DeploymentName",
+                            "value": "[tolower(parameters('CustomerName'))]"
+                        },
+                        {
+                            "name": "Startup.KeyVaultCredentialConnectionString",
+                            "value":
+                                "RunAs=App; TenantId=1234; AppId=1234; AppKey=1234"
+                        },
+                        {
+                            "name": "offline_",
+                            "value": "10.0.0.1"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

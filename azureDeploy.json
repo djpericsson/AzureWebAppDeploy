@@ -1,25 +1,76 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "CustomerName": {
             "type": "string",
-            "defaultValue": "Addlevel DEV",
+            "minLength": 1,
+            "maxLength": 24,
+            "defaultValue": "",
             "metadata": {
-                "description": "The Customer name."
+                "description": "The customer name. Only A to Z characters and numbers are valid."
+            }
+        },
+        "SaasResourceGroup": {
+            "type": "string",
+            "defaultValue": "SignUp-SAAS-Services",
+            "metadata": {
+                "description": "The Saas Service Resource Group name."
             },
-            "minLength": 1
+            "allowedValues": [
+                "SignUp-SAAS-Services"
+            ]
+        },
+        "AppServicePlan": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24,
+            "defaultValue": "signupxfwprodrgtfuf"
         }
     },
     "variables": {
-        "UniqueString": "[substring(uniqueString(subscription().subscriptionId), 0, 8)]"
+        "StorageAccountType": "Standard_LRS",
+        "CustomerName": "[substring(concat(replace(trim(parameters('CustomerName')),' ', ''), uniqueString(parameters('CustomerName'))), 0, 19)]",
+        "ResourceGroup": "[resourceGroup().name]"
     },
     "resources": [
-    ],
-    "outputs": {
-        "UniqueString": {
-            "type": "string",
-            "value": "[variables('UniqueString')]"
+        {
+            "apiVersion": "2017-05-10",
+            "name": "nestedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('ResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri":
+                        "https://raw.githubusercontent.com/djpericsson/SaasCustomerDeploy/master/customerDeploy.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "CustomerName": { "value": "[variables('CustomerName')]" },
+                    "StorageAccountType": { "value": "[variables('StorageAccountType')]" },
+                    "Tag": { "value": "[trim(parameters('CustomerName'))]" },
+                    "AppServicePlan": { "value": "[parameters('AppServicePlan')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "nestedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('SaaSResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/djpericsson/SaasCustomerDeploy/master/dnsRecordSet.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "CustomerName": { "value": "[replace(trim(parameters('CustomerName')),' ', '')]" },
+                    "CNAME": { "value": "[variables('CustomerName')]" },
+                    "DNSZoneName": { "value": "dev.addlevel.net" }
+                }
+            }
         }
-    }
+    ]
 }
