@@ -19,7 +19,7 @@
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "ugpf4mszvfoxq",
             "metadata": {
                 "description": "The name of the App Service Plan to deploy or bind WebApp to. Leave empty for auto-generated unique name."
             }
@@ -207,7 +207,9 @@
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms/', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"
+            ],
             "properties": {
                 "name": "[variables('uniqueString')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"
