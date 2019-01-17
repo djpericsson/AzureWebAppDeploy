@@ -143,7 +143,7 @@
             "Description": "Update all Azure Automation Modules",
             "Version": "1.0.0.0",
             "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1",
-            "JobId": "[guid(variables('uniqueString'))]"
+            "JobId": "[guid(variables('Runbook').Name)]"
         }
     },
     "resources": [
@@ -260,9 +260,7 @@
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"
-            ],
+            "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"],
             "properties": {
                 "name": "[variables('uniqueString')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"
