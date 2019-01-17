@@ -239,7 +239,7 @@
                     "AutomationAccount": "[variables('uniqueString')]"
                 }
             }
-        }
+        },
         {
             "apiVersion": "2017-08-01",
             "name": "[variables('AppServicePlanName')]",
