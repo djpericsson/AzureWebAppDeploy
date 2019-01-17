@@ -178,8 +178,7 @@
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "sku": {
-                "name": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].name]",
-                "capacity": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].capacity]"
+                "name": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].name]"
             },
             "properties": {
                 "name": "[variables('uniqueString')]"
