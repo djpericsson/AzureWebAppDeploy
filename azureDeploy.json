@@ -137,6 +137,13 @@
             "aad_PostLogoutRedirectUri": "",
             "aad_ExternalApiId": "",
             "security_Admins": ""
+        },
+        "Runbook": {
+            "Name": "Update-AzureModules",
+            "Description": "Update all Azure Automation Modules",
+            "Version": "1.0.0.0",
+            "Uri": "https://raw.githubusercontent.com/Optilon/Azure/master/Src/Update-AzureModules.ps1?token=APkeBgW8NO6AhorjMQIt1Q7I02NCwsALks5cQXwowA%3D%3D",
+            "JobId": "[guid(variables('uniqueString'))]"
         }
     },
     "resources": [
@@ -196,6 +203,43 @@
                 }
             }
         },
+        {
+            "apiVersion": "2015-10-31",
+            "type": "Microsoft.Automation/automationAccounts/runbooks",
+            "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [],
+            "properties": {
+                "description": "[variables('Runbook').Description]",
+                "runbookType": "PowerShell",
+                "logProgress": false,
+                "logVerbose": false,
+                "publishContentLink": {
+                    "uri": "[variables('Runbook').Uri]",
+                    "version": "[variables('Runbook').Version]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-10-31",
+            "name": "[concat(variables('uniqueString'), '/', variables('Runbook').JobId)]",
+            "type": "Microsoft.Automation/automationAccounts/jobs",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'), '/runbooks/', variables('Runbook').Name)]"
+            ],
+            "tags": {},
+            "properties": {
+                "runbook": {
+                    "name": "[variables('Runbook').Name]"
+                },
+                "parameters": {
+                    "AutomationResourceGroup": "[resourceGroup().name]",
+                    "AutomationAccount": "[variables('uniqueString')]"
+                }
+            }
+        }
         {
             "apiVersion": "2017-08-01",
             "name": "[variables('AppServicePlanName')]",
