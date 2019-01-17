@@ -114,7 +114,7 @@
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "sku": "[variables(AppServicePlan)[parameters(AppServicePlan)]]",
+            "sku": "[variables('AppServicePlan')[parameters('AppServicePlan')]]",
             "properties": {
                 "name": "[variables('uniqueString')]"
             }
