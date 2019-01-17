@@ -142,7 +142,7 @@
             "Name": "Update-AzureModules",
             "Description": "Update all Azure Automation Modules",
             "Version": "1.0.0.0",
-            "Uri": "https://raw.githubusercontent.com/Optilon/Azure/master/Src/Update-AzureModules.ps1?token=APkeBgW8NO6AhorjMQIt1Q7I02NCwsALks5cQXwowA%3D%3D",
+            "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1",
             "JobId": "[guid(variables('uniqueString'))]"
         }
     },
