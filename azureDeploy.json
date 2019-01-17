@@ -240,7 +240,7 @@
                     "properties": {
                         "aad_ClientId": "aad_ClientId",
                         "aad_ClientSecret": "aad_ClientSecret",
-                        "aad_TenantId": "[[subscription().tenantId]]",
+                        "aad_TenantId": "[subscription().tenantId]",
                         "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
                         "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
                         "security_Admins": "ADMPEER"
@@ -256,12 +256,12 @@
                     ],
                     "properties": {
                         "StorageConnection": {
-                            "value": "Connection",
+                            "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('uniqueString'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
                             "Name": "StorageConnection",
                             "type": "Custom"
                         },
                         "KeyValueStorageConnection": {
-                            "value": "Connection",
+                            "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('uniqueString'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
                             "Name": "KeyValueStorageConnection",
                             "type": "Custom"
                         }
