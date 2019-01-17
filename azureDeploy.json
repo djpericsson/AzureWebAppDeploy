@@ -207,10 +207,10 @@
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', variables('uniqueString'))]"],
+            "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"],
             "properties": {
                 "name": "[variables('uniqueString')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueString'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"
             },
             "resources": [
                 {
