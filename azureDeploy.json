@@ -20,7 +20,20 @@
         "AppServicePlan": {
             "type": "string",
             "defaultValue": "F1",
-            "allowedValues": ["F1 Free", "D1 Shared", "B1 Basic", "B2 Basic", "B3 Basic", "S1 Standard", "S2 Standard", "S3 Standard", "P1 Premium", "P2 Premium", "P3 Premium", "P4 Premium"]
+            "allowedValues": [
+                "F1 Free",
+                "D1 Shared",
+                "B1 Basic",
+                "B2 Basic",
+                "B3 Basic",
+                "S1 Standard",
+                "S2 Standard",
+                "S3 Standard",
+                "P1 Premium",
+                "P2 Premium",
+                "P3 Premium",
+                "P4 Premium"
+            ]
         },
         "PackageUri": {
             "type": "string",
@@ -40,12 +53,12 @@
         },
         "containerName": "artifacts",
         "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
-        "AppServicePlan" : {
-            "F1 Free" : {
+        "AppServicePlan": {
+            "F1 Free": {
                 "name": "F1",
                 "capacity": "1"
             },
-            "D1 Shared" : {
+            "D1 Shared": {
                 "name": "D1",
                 "capacity": "1"
             }
@@ -114,7 +127,10 @@
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "sku": "[variables('AppServicePlan')[parameters('AppServicePlan')]]",
+            "sku": {
+                "name": "[variables('AppServicePlan')[parameters('AppServicePlan')].name]",
+                "capacity": "[variables('AppServicePlan')[parameters('AppServicePlan')].capacity]"
+            },
             "properties": {
                 "name": "[variables('uniqueString')]"
             }
@@ -182,6 +198,13 @@
         }
     ],
     "outputs": {
-
+        "name": {
+            "type": "string",
+            "value": "[variables('AppServicePlan')[parameters('AppServicePlan')].name]"
+        },
+        "capacity": {
+            "type": "string",
+            "value": "[variables('AppServicePlan')[parameters('AppServicePlan')].capacity]"
+        }
     }
 }
