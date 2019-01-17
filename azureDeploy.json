@@ -17,6 +17,14 @@
                 "description": "The type of SKU to use for the storage account."
             }
         },
+        "SecurityAdmins": {
+            "type": "string",
+            "defaultValue": "abc",
+            "minLength": 1,
+            "metadata": {
+                "description": "Web Site administrators."
+            }
+        },
         "AppServicePlanName": {
             "type": "string",
             "defaultValue": "",
@@ -51,14 +59,6 @@
             "minLength": 1,
             "metadata": {
                 "description": "The Dynamics 365 URI to be used."
-            }
-        },
-        "SecurityAdmins": {
-            "type": "string",
-            "defaultValue": "",
-            "minLength": 1,
-            "metadata": {
-                "description": "Web Site administrators."
             }
         },
         "PackageUri": {
@@ -207,7 +207,7 @@
                 "capacity": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].capacity]"
             },
             "properties": {
-                "name": "[variables('uniqueString')]"
+                "name": "[variables('AppServicePlanName')]"
             }
         },
         {
