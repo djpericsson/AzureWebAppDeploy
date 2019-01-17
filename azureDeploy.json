@@ -259,13 +259,8 @@
                     ],
                     "properties": {
                         "StorageConnection": {
-                            "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('uniqueString'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',toLower(concat(variables('uniqueString'), copyIndex())),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts',concat(variables('uniqueString'), copyIndex())),'2015-05-01-preview').key1)]",
                             "Name": "StorageConnection",
-                            "type": "Custom"
-                        },
-                        "KeyValueStorageConnection": {
-                            "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('uniqueString'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-                            "Name": "KeyValueStorageConnection",
                             "type": "Custom"
                         }
                     }
