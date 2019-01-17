@@ -71,6 +71,7 @@
         },
         "containerName": "artifacts",
         "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
+        "AppServicePlanName": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
         "AppServicePlanSKU": {
             "F1 Free": {
                 "name": "F1",
@@ -189,7 +190,7 @@
         },
         {
             "apiVersion": "2017-08-01",
-            "name": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
+            "name": "[variables('AppServicePlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
@@ -208,11 +209,11 @@
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"
+                "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"
             ],
             "properties": {
                 "name": "[variables('uniqueString')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName')))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"
             },
             "resources": [
                 {
