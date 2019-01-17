@@ -17,6 +17,14 @@
                 "description": "The type of replication to use for the storage account."
             }
         },
+        "AppServicePlanName": {
+            "type": "string",
+            "defaultValue": "[variables('uniqueString')]",
+            "metadata": {
+                "description": "The name of the App Service Plan to deploy or bind WebApp to."
+            },
+            "minLength": 1
+        },
         "AppServicePlanSKU": {
             "type": "string",
             "allowedValues": [
@@ -56,7 +64,7 @@
         },
         "containerName": "artifacts",
         "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
-        "AppServicePlan": {
+        "AppServicePlanSKU": {
             "F1 Free": {
                 "name": "F1",
                 "capacity": "1"
@@ -166,13 +174,13 @@
         },
         {
             "apiVersion": "2017-08-01",
-            "name": "[variables('uniqueString')]",
+            "name": "[parameters('AppServicePlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "sku": {
-                "name": "[variables('AppServicePlan')[parameters('AppServicePlan')].name]",
-                "capacity": "[variables('AppServicePlan')[parameters('AppServicePlan')].capacity]"
+                "name": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].name]",
+                "capacity": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].capacity]"
             },
             "properties": {
                 "name": "[variables('uniqueString')]"
