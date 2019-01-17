@@ -143,7 +143,7 @@
             "Description": "Update all Azure Automation Modules",
             "Version": "1.0.0.0",
             "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1",
-            "JobId": "[guid(variables('Runbook').Name)]"
+            "JobId": "[guid(variables('uniqueString'))]"
         }
     },
     "resources": [
