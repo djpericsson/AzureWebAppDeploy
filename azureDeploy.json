@@ -19,7 +19,7 @@
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "123",
+            "defaultValue": "",
             "metadata": {
                 "description": "The name of the App Service Plan to deploy or bind WebApp to. Leave empty for auto-generated unique name."
             }
@@ -246,7 +246,7 @@
                         "aad_TenantId": "[subscription().tenantId]",
                         "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
                         "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
-                        "security_Admins": "[listKeys(resourceId('Microsoft.Web/sites/config', variables('uniqueString'), 'publishingcredentials'), providers('Microsoft.Web', 'sites').apiVersions[0]).properties.publishingUserName]"
+                        "security_Admins": "ADMPEER"
                     }
                 },
                 {
