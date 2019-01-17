@@ -14,14 +14,14 @@
             "allowedValues": ["Standard_LRS", "Standard_ZRS", "Standard_GRS", "Standard_RAGRS", "Premium_LRS"],
             "defaultValue": "Standard_LRS",
             "metadata": {
-                "description": "The type of replication to use for the storage account."
+                "description": "The type of SKU to use for the storage account."
             }
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "a",
+            "defaultValue": "",
             "metadata": {
-                "description": "The name of the App Service Plan to deploy or bind WebApp to."
+                "description": "The name of the App Service Plan to deploy or bind WebApp to. Leave empty for auto-generated unique name."
             }
         },
         "AppServicePlanSKU": {
@@ -45,12 +45,20 @@
                 "description": "The App Service Plan SKU."
             }
         },
+        "Dynamics365Uri": {
+            "type": "string",
+            "defaultValue": "https://axtestdynamics365aos-addlevel.cloudax.dynamics.com",
+            "minLength": 1,
+            "metadata": {
+                "description": "The Dynamics 365 URI to be used."
+            }
+        },
         "PackageUri": {
             "type": "string",
             "defaultValue": "https://github.com/djpericsson/AzureWebAppDeploy/raw/master/alis.zip",
             "minLength": 1,
             "metadata": {
-                "description": "The application package URI."
+                "description": "The application package URI to be deployed to the WebApp."
             }
         }
     },
@@ -112,6 +120,14 @@
                 "name": "P4",
                 "capacity": "4"
             }
+        },
+        "appSettings": {
+            "aad_ClientId": "",
+            "aad_ClientSecret": "",
+            "aad_TenantId": "",
+            "aad_PostLogoutRedirectUri": "",
+            "aad_ExternalApiId": "",
+            "security_Admins": ""
         }
     },
     "resources": [
@@ -221,7 +237,14 @@
                         "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
                         "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
                     ],
-                    "properties": {}
+                    "properties": {
+                        "aad_ClientId": "aad_ClientId",
+                        "aad_ClientSecret": "aad_ClientSecret",
+                        "aad_TenantId": "[[subscription().tenantId]]",
+                        "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
+                        "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
+                        "security_Admins": "ADMPEER"
+                    }
                 },
                 {
                     "apiVersion": "2015-08-01",
