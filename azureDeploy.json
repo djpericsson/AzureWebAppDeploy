@@ -19,7 +19,7 @@
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "123",
+            "defaultValue": "abc",
             "metadata": {
                 "description": "The name of the App Service Plan to deploy or bind WebApp to. Leave empty for auto-generated unique name."
             }
@@ -246,8 +246,8 @@
                         "aad_ClientSecret": "aad_ClientSecret",
                         "aad_TenantId": "[subscription().tenantId]",
                         "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
-                        "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
-                        "security_Admins": "[listKeys(resourceId('Microsoft.Web/sites/config', variables('uniqueString'), 'publishingcredentials'), '2016-08-01').properties.publishingUserName]"
+                        "aad_ExternalApiId": "[parameters('Dynamics365Uri')]"
+                        // "security_Admins": "[listKeys(resourceId('Microsoft.Web/sites/config', variables('uniqueString'), 'publishingcredentials'), '2016-08-01').properties.publishingUserName]"
                     }
                 },
                 {
@@ -260,7 +260,7 @@
                     ],
                     "properties": {
                         "StorageConnection": {
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('uniqueString'), ';AccountKey=',concat(listKeys(variables('uniqueString'), '2018-07-01').key1))]",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('uniqueString'),';AccountKey=',concat(listKeys(concat('/Microsoft.Storage/storageAccounts/', variables('uniqueString')),'2015-05-01-preview').key1))]",
                             "Name": "StorageConnection",
                             "type": "Custom"
                         }
