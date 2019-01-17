@@ -19,7 +19,7 @@
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "abcd",
+            "defaultValue": "123",
             "metadata": {
                 "description": "The name of the App Service Plan to deploy or bind WebApp to. Leave empty for auto-generated unique name."
             }
@@ -260,7 +260,7 @@
                     ],
                     "properties": {
                         "StorageConnection": {
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('uniqueString'), ';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('uniqueString'), ';AccountKey=',concat(listKeys(variables('uniqueString'), '2018-07-01').key1))]",
                             "Name": "StorageConnection",
                             "type": "Custom"
                         }
