@@ -17,9 +17,8 @@
                 "description": "The type of replication to use for the storage account."
             }
         },
-        "AppServicePlan": {
+        "AppServicePlanSKU": {
             "type": "string",
-            "defaultValue": "F1",
             "allowedValues": [
                 "F1 Free",
                 "D1 Shared",
@@ -33,7 +32,11 @@
                 "P2 Premium",
                 "P3 Premium",
                 "P4 Premium"
-            ]
+            ],
+            "defaultValue": "D1 Shared",
+            "metadata": {
+                "description": "The App Service Plan SKU."
+            }
         },
         "PackageUri": {
             "type": "string",
@@ -60,6 +63,46 @@
             },
             "D1 Shared": {
                 "name": "D1",
+                "capacity": "1"
+            },
+            "B1 Basic": {
+                "name": "B1",
+                "capacity": "1"
+            },
+            "B2 Basic": {
+                "name": "B2",
+                "capacity": "1"
+            },
+            "B3 Basic": {
+                "name": "B3",
+                "capacity": "1"
+            },
+            "S1 Standard": {
+                "name": "S1",
+                "capacity": "1"
+            },
+            "S2 Standard": {
+                "name": "S2",
+                "capacity": "1"
+            },
+            "S3 Standard": {
+                "name": "S3",
+                "capacity": "1"
+            },
+            "P1 Premium": {
+                "name": "P1",
+                "capacity": "1"
+            },
+            "P2 Premium": {
+                "name": "P2",
+                "capacity": "1"
+            },
+            "P3 Premium": {
+                "name": "P3",
+                "capacity": "1"
+            },
+            "P4 Premium": {
+                "name": "P4",
                 "capacity": "1"
             }
         }
