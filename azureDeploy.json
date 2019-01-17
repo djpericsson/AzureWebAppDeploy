@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "abc",
+            "defaultValue": "",
             "minLength": 1,
             "metadata": {
                 "description": "Web Site administrators."
