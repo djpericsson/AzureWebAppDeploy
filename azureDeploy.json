@@ -9,10 +9,18 @@
             },
             "minLength": 1
         },
+        "StorageSKU": {
+            "type": "string",
+            "allowedValues": ["Standard_LRS", "Standard_ZRS", "Standard_GRS", "Standard_RAGRS", "Premium_LRS"],
+            "defaultValue": "Standard_LRS",
+            "metadata": {
+                "description": "The type of replication to use for the storage account."
+            }
+        },
         "ServerFarmsSkuName": {
             "type": "string",
             "defaultValue": "F1",
-            "allowedValues": ["F1", "D1", "B1", "B2", "B3", "S1", "S2", "S3", "P1", "P2", "P3", "P4"]
+            "allowedValues": ["F1 Free", "D1 Shared", "B1 Basic", "B2 Basic", "B3 Basic", "S1", "S2", "S3", "P1", "P2", "P3", "P4"]
         },
         "ServerFarmsSkuCapacity": {
             "type": "int",
@@ -39,7 +47,16 @@
             "Solution": "[variables('uniqueString')]"
         },
         "containerName": "artifacts",
-        "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]"
+        "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
+        "AppServicePlan": [
+            {
+                "F1 Free": "F1",
+                "D1 Shared": "D1",
+                "B1 Basic": "B1",
+                "B2 Basic": "B2",
+                "B3 Basic": "B3"
+            }
+        ]
     },
     "resources": [
         {
@@ -50,7 +67,7 @@
             "tags": "[variables('tags')]",
             "kind": "StorageV2",
             "sku": {
-                "name": "Standard_LRS",
+                "name": "[parameters('StorageSKU')]",
                 "tier": "Standard"
             },
             "properties": {
@@ -105,7 +122,7 @@
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "sku": {
-                "name": "[parameters('ServerFarmsSkuName')]",
+                "name": "variables('AppServicePlan')[parameters('AppServicePlan')].Value)",
                 "capacity": "[parameters('ServerFarmsSkuCapacity')]"
             },
             "properties": {
