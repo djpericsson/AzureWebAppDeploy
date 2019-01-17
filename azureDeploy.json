@@ -246,15 +246,5 @@
                 }
             ]
         }
-    ],
-    "outputs": {
-        "name": {
-            "type": "string",
-            "value": "[variables('AppServicePlan')[parameters('AppServicePlan')].name]"
-        },
-        "capacity": {
-            "type": "string",
-            "value": "[variables('AppServicePlan')[parameters('AppServicePlan')].capacity]"
-        }
-    }
+    ]
 }
