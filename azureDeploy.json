@@ -17,18 +17,10 @@
                 "description": "The type of replication to use for the storage account."
             }
         },
-        "ServerFarmsSkuName": {
+        "AppServicePlan": {
             "type": "string",
             "defaultValue": "F1",
-            "allowedValues": ["F1 Free", "D1 Shared", "B1 Basic", "B2 Basic", "B3 Basic", "S1", "S2", "S3", "P1", "P2", "P3", "P4"]
-        },
-        "ServerFarmsSkuCapacity": {
-            "type": "int",
-            "defaultValue": 1,
-            "minValue": 1,
-            "metadata": {
-                "description": "Describes plan's instance count."
-            }
+            "allowedValues": ["F1 Free", "D1 Shared", "B1 Basic", "B2 Basic", "B3 Basic", "S1 Standard", "S2 Standard", "S3 Standard", "P1 Premium", "P2 Premium", "P3 Premium", "P4 Premium"]
         },
         "PackageUri": {
             "type": "string",
@@ -48,15 +40,16 @@
         },
         "containerName": "artifacts",
         "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
-        "AppServicePlan": [
-            {
-                "F1 Free": "F1",
-                "D1 Shared": "D1",
-                "B1 Basic": "B1",
-                "B2 Basic": "B2",
-                "B3 Basic": "B3"
+        "AppServicePlan" : {
+            "F1 Free" : {
+                "name": "F1",
+                "capacity": "1"
+            },
+            "D1 Shared" : {
+                "name": "D1",
+                "capacity": "1"
             }
-        ]
+        }
     },
     "resources": [
         {
@@ -121,10 +114,7 @@
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "sku": {
-                "name": "variables('AppServicePlan')[parameters('AppServicePlan')].Value)",
-                "capacity": "[parameters('ServerFarmsSkuCapacity')]"
-            },
+            "sku": "[variables(AppServicePlan)[parameters(AppServicePlan)]]",
             "properties": {
                 "name": "[variables('uniqueString')]"
             }
@@ -190,5 +180,8 @@
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {
+
+    }
 }
