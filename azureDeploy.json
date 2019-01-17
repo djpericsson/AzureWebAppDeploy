@@ -208,7 +208,7 @@
             "type": "Microsoft.Automation/automationAccounts/runbooks",
             "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
             "location": "[resourceGroup().location]",
-            "tags": "[parameters('tags')]",
+            "tags": "[variables('tags')]",
             "dependsOn": [],
             "properties": {
                 "description": "[variables('Runbook').Description]",
