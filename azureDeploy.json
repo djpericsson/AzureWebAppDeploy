@@ -19,7 +19,7 @@
         },
         "AppServicePlanName": {
             "type": "string",
-            "defaultValue": "aaaa",
+            "defaultValue": "",
             "metadata": {
                 "description": "The name of the App Service Plan to deploy or bind WebApp to."
             }
@@ -70,7 +70,7 @@
             },
             "D1 Shared": {
                 "name": "D1",
-                "capacity": "1"
+                "capacity": "2"
             },
             "B1 Basic": {
                 "name": "B1",
@@ -78,11 +78,11 @@
             },
             "B2 Basic": {
                 "name": "B2",
-                "capacity": "1"
+                "capacity": "2"
             },
             "B3 Basic": {
                 "name": "B3",
-                "capacity": "1"
+                "capacity": "3"
             },
             "S1 Standard": {
                 "name": "S1",
@@ -90,11 +90,11 @@
             },
             "S2 Standard": {
                 "name": "S2",
-                "capacity": "1"
+                "capacity": "2"
             },
             "S3 Standard": {
                 "name": "S3",
-                "capacity": "1"
+                "capacity": "3"
             },
             "P1 Premium": {
                 "name": "P1",
@@ -102,15 +102,15 @@
             },
             "P2 Premium": {
                 "name": "P2",
-                "capacity": "1"
+                "capacity": "2"
             },
             "P3 Premium": {
                 "name": "P3",
-                "capacity": "1"
+                "capacity": "3"
             },
             "P4 Premium": {
                 "name": "P4",
-                "capacity": "1"
+                "capacity": "4"
             }
         }
     },
@@ -178,7 +178,8 @@
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "sku": {
-                "name": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].name]"
+                "name": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].name]",
+                "capacity": "[variables('AppServicePlanSKU')[parameters('AppServicePlanSKU')].capacity]"
             },
             "properties": {
                 "name": "[variables('uniqueString')]"
