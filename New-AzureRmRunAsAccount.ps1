@@ -14,6 +14,8 @@ $SubscriptionId = '692529f0-a0ae-4fb6-aa9e-a16df69f87cb'
 $CreateClassicRunAsAccount = $false
 $SelfSignedCertPlainPassword = 'nASCLNasldhkax901283X!nadlkit'
 
+Get-Module -ListAvailable *AzureRm.* | Select name, version, path
+
 Install-Module AzureRM -Force
 
 # Login-AzureRmAccount
