@@ -6,6 +6,12 @@ param(
     [string]$KeyVaultName
 )
 
+$AutomationAccountName = 'aho35sqjs3j7s'
+$ResourceGroupName = 'SignUp-TST'
+$SubscriptionId = '692529f0-a0ae-4fb6-aa9e-a16df69f87cb'
+$Location = 'westeurope'
+$KeyVaultName = 'aho35sqjs3j7s'
+
 Write-Output ""
 
 Get-AzureRmSubscription -SubscriptionId $SubscriptionId | Select-AzureRmSubscription | Out-Null
