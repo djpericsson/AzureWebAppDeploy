@@ -19,7 +19,10 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 
 
-
+Connect-AzureRmAccount
+$azureRmContext = Get-AzureRmContext
+$token = ($azureRmContext.TokenCache.ReadItems() | Where-Object { $_.Resource -eq "https://management.core.windows.net/" } | Sort-Object -Property ExpiresOn -Descending | Select-Object -First 1)
+$token.AccessToken | Set-Clipboard
 
 $stringHashName = 'aho35sqjs3j7s'
 
@@ -32,7 +35,7 @@ $globalParams = @{
 $TemplateUri = "https://raw.githubusercontent.com/Optilon/Azure/master/Src/Templates/"
 
 # Create Automation Runbook
-$TemplateName = 'automationRunbook.json?token=APkeBgTw9TT-nVoeNap81VYSBlqxp6Mjks5cQaRxwA%3D%3D'
+$TemplateName = 'automationRunbook.json'
 
 $params = @{
     AutomationAccountName = $stringHashName
@@ -41,6 +44,8 @@ $params = @{
     RunbookVersion        = '1.0.0.0'
     ScriptUri             = 'https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1'
     JobId                 = [System.Guid]::NewGuid().toString()
+    AccountId             = $azureRmContext.Account.Id
+    AccessToken           = $token.AccessToken
 }
 
 Write-Output "New-AzureRmResourceGroupDeployment -$($globalParams.Keys.ForEach({"$_ '$($globalParams.$_)'"}) -join ' -') -TemplateUri $($TemplateUri + $TemplateName) -$($params.Keys.ForEach({"$_ '$($params.$_)'"}) -join ' -')"
