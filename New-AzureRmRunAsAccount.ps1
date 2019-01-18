@@ -19,7 +19,7 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Confirm:$False -F
 
 Write-Output "3"
 
-Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Confirm:$False
 
 Write-Output "4"
 
