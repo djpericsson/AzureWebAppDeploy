@@ -203,43 +203,43 @@
                 }
             }
         },
-        // {
-        //     "apiVersion": "2015-10-31",
-        //     "type": "Microsoft.Automation/automationAccounts/runbooks",
-        //     "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
-        //     "location": "[resourceGroup().location]",
-        //     "tags": "[variables('tags')]",
-        //     "dependsOn": [],
-        //     "properties": {
-        //         "description": "[variables('Runbook').Description]",
-        //         "runbookType": "PowerShell",
-        //         "logProgress": false,
-        //         "logVerbose": false,
-        //         "publishContentLink": {
-        //             "uri": "[variables('Runbook').Uri]",
-        //             "version": "[variables('Runbook').Version]"
-        //         }
-        //     }
-        // },
-        // {
-        //     "apiVersion": "2015-10-31",
-        //     "name": "[concat(variables('uniqueString'), '/', variables('Runbook').JobId)]",
-        //     "type": "Microsoft.Automation/automationAccounts/jobs",
-        //     "location": "[resourceGroup().location]",
-        //     "dependsOn": [
-        //         "[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'), '/runbooks/', variables('Runbook').Name)]"
-        //     ],
-        //     "tags": {},
-        //     "properties": {
-        //         "runbook": {
-        //             "name": "[variables('Runbook').Name]"
-        //         },
-        //         "parameters": {
-        //             "AutomationResourceGroup": "[resourceGroup().name]",
-        //             "AutomationAccount": "[variables('uniqueString')]"
-        //         }
-        //     }
-        // },
+        {
+            "apiVersion": "2015-10-31",
+            "type": "Microsoft.Automation/automationAccounts/runbooks",
+            "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
+            "location": "[resourceGroup().location]",
+            "tags": "[variables('tags')]",
+            "dependsOn": [],
+            "properties": {
+                "description": "[variables('Runbook').Description]",
+                "runbookType": "PowerShell",
+                "logProgress": false,
+                "logVerbose": false,
+                "publishContentLink": {
+                    "uri": "[variables('Runbook').Uri]",
+                    "version": "[variables('Runbook').Version]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-10-31",
+            "name": "[concat(variables('uniqueString'), '/', variables('Runbook').JobId)]",
+            "type": "Microsoft.Automation/automationAccounts/jobs",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'), '/runbooks/', variables('Runbook').Name)]"
+            ],
+            "tags": {},
+            "properties": {
+                "runbook": {
+                    "name": "[variables('Runbook').Name]"
+                },
+                "parameters": {
+                    "AutomationResourceGroup": "[resourceGroup().name]",
+                    "AutomationAccount": "[variables('uniqueString')]"
+                }
+            }
+        },
         {
             "apiVersion": "2017-08-01",
             "name": "[variables('AppServicePlanName')]",
