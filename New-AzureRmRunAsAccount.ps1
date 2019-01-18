@@ -15,9 +15,17 @@ Get-Module -ListAvailable *AzureRm.* | Select name, version, path
 
 Write-Output "2"
 
-Install-Module AzureRM -Confirm:$False -Force
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Confirm:$False -Force
 
 Write-Output "3"
+
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
+Write-Output "4"
+
+Install-Module AzureRM -Confirm:$False -Force
+
+Write-Output "5"
 
 # Login-AzureRmAccount
 
