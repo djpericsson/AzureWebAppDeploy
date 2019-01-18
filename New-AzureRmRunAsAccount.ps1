@@ -102,7 +102,7 @@ if (!(($AzureRMProfileVersion.Major -ge 3 -and $AzureRMProfileVersion.Minor -ge 
 }
 
 
-Connect-AzureRmAccount
+Connect-AzureRmAccount -Tenant "3f58ea11-b96f-46c0-a92d-edbc0728590f" -SubscriptionId "692529f0-a0ae-4fb6-aa9e-a16df69f87cb"
 
 #Login-AzureRmAccount -Environment $EnvironmentName 
 
