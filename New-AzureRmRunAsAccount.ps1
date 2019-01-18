@@ -39,7 +39,8 @@ function CreateServicePrincipal([System.Security.Cryptography.X509Certificates.X
 
     $KeyCredential = $null
     If ("$($azureRmModuleVersion.Version.Major).$($azureRmModuleVersion.Version.Minor).$($azureRmModuleVersion.Version.Build)" -le "4.2.0") {
-        $KeyCredential = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+        # $KeyCredential = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+        $KeyCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADKeyCredential
     }
     Else {
         $KeyCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADKeyCredential
@@ -100,7 +101,11 @@ if (!(($AzureRMProfileVersion.Major -ge 3 -and $AzureRMProfileVersion.Minor -ge 
     return
 }
 
+
+Connect-AzureRmAccount
+
 #Login-AzureRmAccount -Environment $EnvironmentName 
+
 $Subscription = Select-AzureRmSubscription -SubscriptionId $SubscriptionId
 
 # Create a Run As account by using a service principal
