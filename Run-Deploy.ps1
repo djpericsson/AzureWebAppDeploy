@@ -39,9 +39,8 @@ $params = @{
     RunbookName           = 'New-AzureRmRunAsAccount'
     RunbookDescription    = 'Create a AzureRmRunAsAccount'
     RunbookVersion        = '1.0.0.0'
-    ScriptUri             = 'https://raw.githubusercontent.com/Optilon/Azure/master/Src/Update-AzureModules.ps1?token=APkeBgW8NO6AhorjMQIt1Q7I02NCwsALks5cQXwowA%3D%3D'
+    ScriptUri             = 'https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1'
     JobId                 = [System.Guid]::NewGuid().toString()
-    Tags                  = $configurationData.Tags
 }
 
 Write-Output "New-AzureRmResourceGroupDeployment -$($globalParams.Keys.ForEach({"$_ '$($globalParams.$_)'"}) -join ' -') -TemplateUri $($TemplateUri + $TemplateName) -$($params.Keys.ForEach({"$_ '$($params.$_)'"}) -join ' -')"
