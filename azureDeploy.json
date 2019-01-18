@@ -142,7 +142,7 @@
             "Name": "Update-AzureModules",
             "Description": "Update all Azure Automation Modules",
             "Version": "1.0.0.0",
-            "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1",
+            "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Update-AzureModules.ps1",
             "JobId": "28ccf8c2-2149-4fb8-8ccf-5fa5076a2ea6"
         }
     },
