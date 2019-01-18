@@ -1,11 +1,4 @@
-Param (
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("AzureCloud", "AzureUSGovernment")]
-    [string]$EnvironmentName = "AzureCloud",
-
-    [Parameter(Mandatory = $false)]
-    [int] $SelfSignedCertNoOfMonthsUntilExpired = 12
-)
+Write-Output "in"
 
 $ResourceGroup = 'SignUp-TST'
 $AutomationAccountName = 'aho35sqjs3j7s'
@@ -13,10 +6,18 @@ $ApplicationDisplayName = "$AutomationAccountName-AutomationRunAs"
 $SubscriptionId = '692529f0-a0ae-4fb6-aa9e-a16df69f87cb'
 $CreateClassicRunAsAccount = $false
 $SelfSignedCertPlainPassword = 'nASCLNasldhkax901283X!nadlkit'
+$EnvironmentName = "AzureCloud"
+$SelfSignedCertNoOfMonthsUntilExpired = 12
+
+Write-Output "1"
 
 Get-Module -ListAvailable *AzureRm.* | Select name, version, path
 
+Write-Output "2"
+
 Install-Module AzureRM -Force
+
+Write-Output "3"
 
 # Login-AzureRmAccount
 
