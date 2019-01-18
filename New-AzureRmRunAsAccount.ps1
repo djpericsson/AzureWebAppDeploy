@@ -14,7 +14,9 @@ $SubscriptionId = '692529f0-a0ae-4fb6-aa9e-a16df69f87cb'
 $CreateClassicRunAsAccount = $false
 $SelfSignedCertPlainPassword = 'nASCLNasldhkax901283X!nadlkit'
 
-Login-AzureRmAccount
+Install-Module AzureRM -Force
+
+# Login-AzureRmAccount
 
 function CreateSelfSignedCertificate([string] $keyVaultName, [string] $certificateName, [string] $selfSignedCertPlainPassword,
     [string] $certPath, [string] $certPathCer, [string] $selfSignedCertNoOfMonthsUntilExpired ) {
