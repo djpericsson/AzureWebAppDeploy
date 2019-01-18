@@ -9,17 +9,7 @@ $SelfSignedCertPlainPassword = 'nASCLNasldhkax901283X!nadlkit'
 $EnvironmentName = "AzureCloud"
 $SelfSignedCertNoOfMonthsUntilExpired = 12
 
-Write-Output "1"
-
 Get-Module -ListAvailable *AzureRm.* | Select name, version, path
-
-Write-Output "2"
-
-Install-Module AzureRM -Confirm:$False -Force
-
-Write-Output "3"
-
-# Login-AzureRmAccount
 
 function CreateSelfSignedCertificate([string] $keyVaultName, [string] $certificateName, [string] $selfSignedCertPlainPassword,
     [string] $certPath, [string] $certPathCer, [string] $selfSignedCertNoOfMonthsUntilExpired ) {
