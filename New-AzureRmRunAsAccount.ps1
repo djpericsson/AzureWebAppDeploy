@@ -15,7 +15,7 @@ Get-Module -ListAvailable *AzureRm.* | Select name, version, path
 
 Write-Output "2"
 
-Install-Module AzureRM -Force
+Install-Module AzureRM -Confirm:$False -Force
 
 Write-Output "3"
 
