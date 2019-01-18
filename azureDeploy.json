@@ -209,7 +209,9 @@
             "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'))]"
+            ],
             "properties": {
                 "description": "[variables('Runbook').Description]",
                 "runbookType": "PowerShell",
