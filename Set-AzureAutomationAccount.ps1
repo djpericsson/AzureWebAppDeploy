@@ -5,11 +5,16 @@ param(
     [string]$AccessToken
 )
 
+Write-Output $AccountId
+Write-Output $AccessToken
+
 Login-AzureRmAccount -AccountId $AccountId -AccessToken $AccessToken
 
 $modules = @(
     "AzureRM.Profile"
 )
+
+Write-Output "Install modules"
 
 #Install AzureRmAutomationModule
 foreach ($module in $modules) {
@@ -36,6 +41,8 @@ foreach ($module in $modules) {
         }
     }
 }
+
+Write-Output "Create Automation Credential"
 
 # Create an Azure Automation Account
 If (-not($AzureRmAutomationCredential = Get-AzureRmAutomationCredential -AutomationAccountName $AutomationAccount -Name $AutomationAccount -ResourceGroupName $AutomationResourceGroup -ErrorAction SilentlyContinue)) {

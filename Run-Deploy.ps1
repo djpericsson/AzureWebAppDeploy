@@ -32,17 +32,17 @@ $globalParams = @{
 }
 
 # Azure Arm Template Uri
-$TemplateUri = "https://raw.githubusercontent.com/Optilon/Azure/master/Src/Templates/"
+$TemplateUri = "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/"
 
 # Create Automation Runbook
 $TemplateName = 'automationRunbook.json'
 
 $params = @{
     AutomationAccountName = $stringHashName
-    RunbookName           = 'New-AzureRmRunAsAccount'
-    RunbookDescription    = 'Create a AzureRmRunAsAccount'
+    RunbookName           = 'Set-AzureAutomationAccount'
+    RunbookDescription    = 'Set-AzureAutomationAccount'
     RunbookVersion        = '1.0.0.0'
-    ScriptUri             = 'https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/New-AzureRmRunAsAccount.ps1'
+    ScriptUri             = 'https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Set-AzureAutomationAccount.ps1'
     JobId                 = [System.Guid]::NewGuid().toString()
     AccountId             = $azureRmContext.Account.Id
     AccessToken           = $token.AccessToken
