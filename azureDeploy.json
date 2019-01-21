@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "ADMPEER",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -373,7 +373,8 @@
             "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"],
             "properties": {
                 "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-                "principalId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('uniqueString')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
+                "principalId": "[concat(resourceId('Microsoft.Web/sites', variables('uniqueString')), '/providers/Microsoft.ManagedIdentity/Identities/default')]",
+                // "principalId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('uniqueString')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
                 "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString'))]"
             }
         }
