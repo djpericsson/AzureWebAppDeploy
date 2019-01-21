@@ -52,6 +52,17 @@
                 "description": "The App Service Plan SKU."
             }
         },
+        "AzureKeyVault": {
+            "type": "bool",
+            "allowedValues": [
+                "True",
+                "False"
+            ],
+            "defaultValue": "True",
+            "metadata": {
+                "description": "Create an Azure Key Vault."
+            }
+        },
         "Dynamics365Uri": {
             "type": "string",
             "defaultValue": "https://axtestdynamics365aos-addlevel.cloudax.dynamics.com",
@@ -208,9 +219,7 @@
             "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": [
-                "[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'))]"
-            ],
+            "dependsOn": ["[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'))]"],
             "properties": {
                 "description": "[variables('Runbook').Description]",
                 "runbookType": "PowerShell",
@@ -260,6 +269,9 @@
             "name": "[variables('uniqueString')]",
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "tags": "[variables('tags')]",
             "dependsOn": ["[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"],
             "properties": {
@@ -322,6 +334,36 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('uniqueString')]",
+            "apiVersion": "2016-10-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "condition": "[parameters('AzureKeyVault')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "[subscription().tenantid]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantid]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('uniqueString')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
+                        "permissions": {
+                            "keys": [],
+                            "secrets": ["get"],
+                            "certificates": []
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            },
+            "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"]
         }
     ]
 }
