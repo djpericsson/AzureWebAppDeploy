@@ -55,10 +55,10 @@
         "AzureKeyVault": {
             "type": "bool",
             "allowedValues": [
-                "true",
-                "false"
+                true,
+                false
             ],
-            "defaultValue": "true",
+            "defaultValue": true,
             "metadata": {
                 "description": "Create an Azure Key Vault."
             }
