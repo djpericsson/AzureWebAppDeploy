@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "ADMPEER",
+            "defaultValue": "",
             "metadata": {
                 "description": "Web Site administrators."
             }
