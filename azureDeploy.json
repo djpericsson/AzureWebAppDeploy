@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "ADMPEER",
+            "defaultValue": "",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -82,7 +82,7 @@
         }
     },
     "variables": {
-        "uniqueString": "concat('ax', [uniqueString(subscription().id, parameters('CustomerName')))]",
+        "uniqueString": "[concat('ax', uniqueString(subscription().id, parameters('CustomerName')))]",
         "sku": "Free",
         "tags": {
             "Customer": "[parameters('CustomerName')]",
