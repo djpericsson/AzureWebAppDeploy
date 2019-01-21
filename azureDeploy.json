@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "ADMPEER",
+            "defaultValue": "",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -342,7 +342,7 @@
             "apiVersion": "2016-10-01",
             "location": "[resourceGroup().location]",
             "scale": null,
-            "condition": "[equals(parameters('AzureKeyVault'), 'True')]",
+            // "condition": "[equals(parameters('AzureKeyVault'), 'True')]",
             "properties": {
                 "sku": {
                     "family": "A",
