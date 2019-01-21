@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "ADMPEER",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -58,7 +58,7 @@
                 "True",
                 "False"
             ],
-            "defaultValue": "True",
+            "defaultValue": "False",
             "metadata": {
                 "description": "Create an Azure Key Vault."
             },
@@ -342,7 +342,7 @@
             "apiVersion": "2016-10-01",
             "location": "[resourceGroup().location]",
             "scale": null,
-            // "condition": "[equals(parameters('AzureKeyVault'), 'True')]",
+            "condition": "[equals(parameters('AzureKeyVault'), 'True')]",
             "properties": {
                 "sku": {
                     "family": "A",
@@ -365,6 +365,17 @@
                 "enabledForTemplateDeployment": false
             },
             "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"]
+        },
+        {
+            "name": "[concat(variables('uniqueString'), '/Microsoft.Authorization/', variables('uniqueString'))]",
+            "apiVersion": "2014-10-01-preview",
+            "type": "Microsoft.Authorization/roleAssignments",
+            "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"],
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+                "principalId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('uniqueString')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
+                "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString'))]"
+            }
         }
     ]
 }
