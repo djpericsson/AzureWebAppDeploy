@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "ADMPEER",
+            "defaultValue": "",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -53,12 +53,12 @@
             }
         },
         "AzureKeyVault": {
-            "type": "bool",
+            "type": "string",
             "allowedValues": [
-                true,
-                false
+                "True",
+                "False"
             ],
-            "defaultValue": true,
+            "defaultValue": "True",
             "metadata": {
                 "description": "Create an Azure Key Vault."
             }
