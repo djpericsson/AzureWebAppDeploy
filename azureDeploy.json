@@ -61,7 +61,8 @@
             "defaultValue": "True",
             "metadata": {
                 "description": "Create an Azure Key Vault."
-            }
+            },
+            "minLength": 1
         },
         "Dynamics365Uri": {
             "type": "string",
