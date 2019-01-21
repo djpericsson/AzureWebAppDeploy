@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "ADMPEER",
             "metadata": {
                 "description": "Web Site administrators."
             }
@@ -54,10 +54,7 @@
         },
         "AzureKeyVault": {
             "type": "string",
-            "allowedValues": [
-                "True",
-                "False"
-            ],
+            "allowedValues": ["True", "False"],
             "defaultValue": "False",
             "metadata": {
                 "description": "Create an Azure Key Vault."
@@ -156,7 +153,7 @@
             "Uri": "https://raw.githubusercontent.com/djpericsson/AzureWebAppDeploy/master/Update-AzureModules.ps1",
             "JobId": "28ccf8c2-2149-4fb8-8ccf-5fa5076a2ea6"
         },
-        "identityResourceId" : "[concat(resourceId('Microsoft.Web/sites', variables('uniqueString')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
+        "identityResourceId": "[concat(resourceId('Microsoft.Web/sites', variables('uniqueString')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
         {
@@ -369,15 +366,14 @@
         },
         {
             "name": "b24988ac-6180-42a0-ab88-20f7382dd24c",
-            // "name": "[guid(resourceGroup().id, deployment().name)]",
-            "apiVersion": "2017-05-01",
+            "apiVersion": "2017-09-01",
             "location": "[resourceGroup().location]",
             "type": "Microsoft.Authorization/roleAssignments",
             "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"],
             "properties": {
                 "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                 "principalId": "[reference(variables('identityResourceId'), '2015-08-31-PREVIEW').principalId]",
-                "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueString'))]"
+                "scope": "[resourceGroup().id]"
             }
         }
     ]
