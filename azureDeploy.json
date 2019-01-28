@@ -152,7 +152,7 @@
         {
             "name": "[variables('uniqueString')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2018-02-01",
+            "apiVersion": "2018-07-01",
             "location": "[resourcegroup().location]",
             "tags": "[variables('tags')]",
             "kind": "StorageV2",
@@ -206,7 +206,7 @@
             }
         },
         {
-            "apiVersion": "2015-10-31",
+            "apiVersion": "2018-06-30",
             "type": "Microsoft.Automation/automationAccounts/runbooks",
             "name": "[concat(variables('uniqueStringRsg'), '/', variables('Runbook').Name)]",
             "location": "[resourceGroup().location]",
@@ -224,7 +224,7 @@
             }
         },
         // {
-        //     "apiVersion": "2015-10-31",
+        //     "apiVersion": "2018-06-30",
         //     "name": "[concat(variables('uniqueString'), '/', variables('Runbook').JobId)]",
         //     "type": "Microsoft.Automation/automationAccounts/jobs",
         //     "location": "[resourceGroup().location]",
@@ -243,7 +243,7 @@
         //     }
         // },
         {
-            "apiVersion": "2017-08-01",
+            "apiVersion": "2018-02-01",
             "name": "[variables('AppServicePlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
@@ -257,7 +257,7 @@
             }
         },
         {
-            "apiVersion": "2015-08-01",
+            "apiVersion": "2018-02-01",
             "name": "[variables('uniqueString')]",
             "type": "Microsoft.Web/sites",
             "location": "[resourceGroup().location]",
@@ -288,7 +288,7 @@
                     }
                 },
                 {
-                    "apiVersion": "2015-08-01",
+                    "apiVersion": "2018-02-01",
                     "name": "appsettings",
                     "type": "config",
                     "dependsOn": [
@@ -305,7 +305,7 @@
                     }
                 },
                 {
-                    "apiVersion": "2015-08-01",
+                    "apiVersion": "2018-02-01",
                     "name": "connectionstrings",
                     "type": "config",
                     "dependsOn": [
@@ -330,7 +330,7 @@
         {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[variables('uniqueString')]",
-            "apiVersion": "2016-10-01",
+            "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
             "scale": null,
