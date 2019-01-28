@@ -80,6 +80,7 @@
     },
     "variables": {
         "uniqueString": "[concat('ax', uniqueString(subscription().subscriptionId, parameters('CustomerName')))]",
+        "uniqueStringRsg": "[concat('ax', uniqueString(subscription().subscriptionId, resourceGroup().id))]",
         "sku": "Free",
         "tags": {
             "Customer": "[parameters('CustomerName')]",
@@ -200,7 +201,7 @@
             }
         },
         {
-            "name": "[variables('uniqueString')]",
+            "name": "[variables('uniqueStringRsg')]",
             "type": "Microsoft.Automation/automationAccounts",
             "apiVersion": "2015-10-31",
             "location": "[resourceGroup().location]",
@@ -215,10 +216,10 @@
         {
             "apiVersion": "2015-10-31",
             "type": "Microsoft.Automation/automationAccounts/runbooks",
-            "name": "[concat(variables('uniqueString'), '/', variables('Runbook').Name)]",
+            "name": "[concat(variables('uniqueStringRsg'), '/', variables('Runbook').Name)]",
             "location": "[resourceGroup().location]",
             "tags": "[variables('tags')]",
-            "dependsOn": ["[concat('Microsoft.Automation/automationAccounts/', variables('uniqueString'))]"],
+            "dependsOn": ["[concat('Microsoft.Automation/automationAccounts/', variables('uniqueStringRsg'))]"],
             "properties": {
                 "description": "[variables('Runbook').Description]",
                 "runbookType": "PowerShell",
