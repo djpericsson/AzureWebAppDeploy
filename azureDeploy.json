@@ -139,14 +139,6 @@
                 "capacity": "4"
             }
         },
-        "appSettings": {
-            "aad_ClientId": "",
-            "aad_ClientSecret": "",
-            "aad_TenantId": "",
-            "aad_PostLogoutRedirectUri": "",
-            "aad_ExternalApiId": "",
-            "security_Admins": ""
-        },
         "Runbook": {
             "Name": "Update-AzureModules",
             "Description": "Update all Azure Automation Modules",
