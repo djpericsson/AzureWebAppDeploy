@@ -21,7 +21,7 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Web Site administrators."
+                "description": "Adinistrators of the Web Site, separated by ','."
             }
         },
         "AppServicePlanName": {
@@ -303,7 +303,7 @@
                         "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
                     ],
                     "properties": {
-                        "aad_ClientId": "aad_ClientId",
+                        "aad_ClientId": "[reference(variables('identityResourceId'), '2015-08-31-PREVIEW').principalId]",
                         "aad_ClientSecret": "aad_ClientSecret",
                         "aad_TenantId": "[subscription().tenantId]",
                         "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
