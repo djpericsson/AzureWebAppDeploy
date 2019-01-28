@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "ADMPEER",
+            "defaultValue": "",
             "metadata": {
                 "description": "Adinistrators of the Web Site, separated by ','."
             }
@@ -365,7 +365,7 @@
             "dependsOn": ["[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"]
         },
         {
-            "name": "[guid(resourceGroup().id, deployment().name)]",
+            "name": "[guid(variables('uniqueString'))]",
             "apiVersion": "2017-09-01",
             "location": "[resourceGroup().location]",
             "type": "Microsoft.Authorization/roleAssignments",
