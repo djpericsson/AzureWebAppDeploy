@@ -19,7 +19,7 @@
         },
         "SecurityAdmins": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "ADMPEER",
             "metadata": {
                 "description": "Adinistrators of the Web Site, separated by ','."
             }
