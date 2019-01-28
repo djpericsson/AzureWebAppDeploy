@@ -340,6 +340,7 @@
             "name": "[variables('uniqueString')]",
             "apiVersion": "2016-10-01",
             "location": "[resourceGroup().location]",
+            "tags": "[variables('tags')]",
             "scale": null,
             "condition": "[equals(parameters('AzureKeyVault'), 'True')]",
             "properties": {
