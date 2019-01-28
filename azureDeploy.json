@@ -79,14 +79,14 @@
         }
     },
     "variables": {
-        "uniqueString": "[concat('ax', uniqueString(subscription().id, parameters('CustomerName')))]",
+        "uniqueString": "[concat('ax', uniqueString(subscription().subscriptionId, parameters('CustomerName')))]",
         "sku": "Free",
         "tags": {
             "Customer": "[parameters('CustomerName')]",
             "Solution": "[variables('uniqueString')]"
         },
         "containerName": "artifacts",
-        "dynamicsAxUri": "[concat('https://', subscription().id,'.azurewebsites.net')]",
+        "dynamicsAxUri": "[concat('https://', subscription().subscriptionId,'.azurewebsites.net')]",
         "AppServicePlanName": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
         "AppServicePlanSKU": {
             "F1 Free": {
